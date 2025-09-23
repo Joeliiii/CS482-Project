@@ -1,6 +1,10 @@
 # CS482-Project
 CS482 Team Project Basketball Web-Application
 
+User Stories spreadsheet:
+
+https://docs.google.com/spreadsheets/d/1EZ5Bp3XK5Yia1kK6OZkUPmyaWaAfsjPJoRD88H_RMCI/edit?usp=sharing
+
 Requirements Fielded:
 
 Organize basketball tournaments targeting kids underage.
