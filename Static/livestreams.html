@@ -1,0 +1,69 @@
+<!doctype html>
+<html class="bg-neutral-950 text-neutral-100">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>YBT League — Livestreams</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>.ybt-card{background:#171717;border:1px solid rgba(234,179,8,.2)}.ybt-border{border-color:rgba(234,179,8,.2)}</style>
+</head>
+<body class="min-h-screen">
+  <header class="sticky top-0 z-50 bg-neutral-900/90 backdrop-blur border-b ybt-border">
+    <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-2"><span class="inline-block w-8 h-8 rounded bg-yellow-500"></span><span class="font-extrabold tracking-tight text-lg">YBT&nbsp;League</span></div>
+        <nav class="hidden md:flex items-center space-x-6 text-sm">
+          <a class="hover:text-yellow-400 text-neutral-300" href="index.html">Home</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="schedule.html">Schedules</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="team.html">Teams</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="bracket.html">Brackets</a>
+          <a class="hover:text-yellow-400 text-yellow-400" href="livestreams.html">Videos</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="gallery.html">Gallery</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="sponsors.html">Sponsors</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="admin.html">Admin</a>
+        </nav>
+      </div>
+      <div class="space-x-2">
+        <a href="login.html"><button class="bg-yellow-500 text-black rounded-2xl px-4 py-2 hover:bg-yellow-400">Log In</button></a>
+        <a href="profile.html"><button class="rounded-2xl border px-4 py-2">Profile</button></a>
+      </div>
+    </div>
+    <div class="border-t ybt-border bg-neutral-900"><div class="max-w-7xl mx-auto px-6 py-2 text-xs text-neutral-300"> </div></div>
+  </header>
+
+  <main class="space-y-16 px-6 py-10 max-w-7xl mx-auto">
+    <section>
+      <h2 class="text-3xl font-extrabold tracking-tight text-yellow-400 mb-4">Livestreams</h2>
+      <div class="ybt-card overflow-hidden rounded-2xl">
+        <div class="relative">
+          <img src="https://placehold.co/1200x675?text=Live+Game+Stream" class="w-full object-cover" alt="Live Stream Placeholder">
+          <span class="absolute top-3 left-3 bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded-full">LIVE</span>
+          <span class="absolute top-3 right-3 bg-neutral-900/80 text-neutral-100 text-xs font-semibold px-2 py-1 rounded">00:00</span>
+        </div>
+        <div class="p-4 flex items-center justify-between">
+          <div><p class="font-semibold">Team A vs Team B</p><p class="text-sm text-neutral-400">Court 2 • Oct 15, 3:00 PM</p></div>
+          <div class="space-x-2">
+            <button class="bg-yellow-500 text-black hover:bg-yellow-400 rounded-2xl px-3 py-2">Play</button>
+            <button class="rounded-2xl border px-3 py-2">Pause</button>
+            <button class="rounded-2xl border px-3 py-2">Reset</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-4 mt-4">
+        <div class="ybt-card md:col-span-2 rounded-2xl p-4">
+          <h3 class="font-semibold">Highlights</h3>
+          <p class="text-sm text-neutral-300">Clips and key moments will appear here after the game finishes.</p>
+        </div>
+        <div class="ybt-card rounded-2xl p-4">
+          <h3 class="font-semibold mb-3">Live Chat</h3>
+          <div class="h-40 border rounded-md flex items-center justify-center text-neutral-400">Chat stream…</div>
+          <input class="w-full rounded-md bg-neutral-800 border border-neutral-700 px-3 py-2 mt-3" placeholder="Say something…" />
+          <button class="mt-2 bg-yellow-500 text-black hover:bg-yellow-400 rounded-2xl w-full py-2">Send</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t ybt-border bg-neutral-900"><div class="max-w-7xl mx-auto px-6 py-6 text-sm text-neutral-400">© 2025 YBT League</div></footer>
+</body>
+</html>

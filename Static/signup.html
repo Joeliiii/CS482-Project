@@ -1,0 +1,57 @@
+<!doctype html>
+<html class="bg-neutral-950 text-neutral-100">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>YBT League — Sign Up</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>.ybt-card{background:#171717;border:1px solid rgba(234,179,8,.2)}.ybt-border{border-color:rgba(234,179,8,.2)}</style>
+</head>
+<body class="min-h-screen">
+  <header class="sticky top-0 z-50 bg-neutral-900/90 backdrop-blur border-b ybt-border">
+    <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-2"><span class="inline-block w-8 h-8 rounded bg-yellow-500"></span><span class="font-extrabold tracking-tight text-lg">YBT&nbsp;League</span></div>
+        <nav class="hidden md:flex items-center space-x-6 text-sm">
+          <a class="hover:text-yellow-400 text-neutral-300" href="index.html">Home</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="schedule.html">Schedules</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="team.html">Teams</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="bracket.html">Brackets</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="livestreams.html">Videos</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="gallery.html">Gallery</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="sponsors.html">Sponsors</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="admin.html">Admin</a>
+        </nav>
+      </div>
+      <div class="space-x-2">
+        <a href="login.html"><button class="bg-yellow-500 text-black rounded-2xl px-4 py-2 hover:bg-yellow-400">Log In</button></a>
+        <a href="profile.html"><button class="rounded-2xl border px-4 py-2">Profile</button></a>
+      </div>
+    </div>
+    <div class="border-t ybt-border bg-neutral-900"><div class="max-w-7xl mx-auto px-6 py-2 text-xs text-neutral-300"> </div></div>
+  </header>
+
+  <main class="space-y-16 px-6 py-10 max-w-7xl mx-auto">
+    <section class="max-w-md mx-auto">
+      <div class="ybt-card shadow-xl rounded-2xl">
+        <div class="space-y-4 p-6">
+          <h2 class="text-2xl font-semibold text-center text-yellow-500">Sign Up</h2>
+          <form class="space-y-4" novalidate>
+            <input class="w-full rounded-md bg-neutral-800 border border-neutral-700 px-3 py-2" placeholder="Full Name" required />
+            <input class="w-full rounded-md bg-neutral-800 border border-neutral-700 px-3 py-2" placeholder="Email" type="email" required />
+            <input class="w-full rounded-md bg-neutral-800 border border-neutral-700 px-3 py-2" placeholder="Phone" type="tel" />
+            <input class="w-full rounded-md bg-neutral-800 border border-neutral-700 px-3 py-2" placeholder="Password" type="password" minlength="6" required />
+            <button type="submit" class="w-full bg-yellow-500 text-black hover:bg-yellow-400 rounded-2xl py-2">Create Account</button>
+          </form>
+          <p class="text-sm text-center text-neutral-400">Already have an account? <a href="login.html" class="text-yellow-500 underline">Log in</a></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t ybt-border bg-neutral-900">
+    <div class="max-w-7xl mx-auto px-6 py-6 text-sm text-neutral-400 flex items-center justify-between">
+      <p>© 2025 YBT League</p><nav class="flex gap-6"><a class="hover:text-yellow-400" href="index.html">Home</a></nav>
+    </div>
+  </footer>
+</body>
+</html>

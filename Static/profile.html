@@ -1,0 +1,91 @@
+<!doctype html>
+<html class="bg-neutral-950 text-neutral-100">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>YBT League — Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>.ybt-card{background:#171717;border:1px solid rgba(234,179,8,.2)}.ybt-border{border-color:rgba(234,179,8,.2)}</style>
+</head>
+<body class="min-h-screen">
+  <header class="sticky top-0 z-50 bg-neutral-900/90 backdrop-blur border-b ybt-border">
+    <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-2"><span class="inline-block w-8 h-8 rounded bg-yellow-500"></span><span class="font-extrabold tracking-tight text-lg">YBT&nbsp;League</span></div>
+        <nav class="hidden md:flex items-center space-x-6 text-sm">
+          <a class="hover:text-yellow-400 text-neutral-300" href="index.html">Home</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="schedule.html">Schedules</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="team.html">Teams</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="bracket.html">Brackets</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="livestreams.html">Videos</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="gallery.html">Gallery</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="sponsors.html">Sponsors</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="admin.html">Admin</a>
+        </nav>
+      </div>
+      <div class="space-x-2">
+        <a href="login.html"><button class="bg-yellow-500 text-black rounded-2xl px-4 py-2 hover:bg-yellow-400">Log In</button></a>
+        <a href="profile.html"><button class="rounded-2xl border px-4 py-2">Profile</button></a>
+      </div>
+    </div>
+    <div class="border-t ybt-border bg-neutral-900"><div class="max-w-7xl mx-auto px-6 py-2 text-xs text-neutral-300"> </div></div>
+  </header>
+
+  <main class="space-y-16 px-6 py-10 max-w-7xl mx-auto">
+    <section>
+      <h2 class="text-3xl font-extrabold tracking-tight text-yellow-400 mb-4">User Profile</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="ybt-card rounded-2xl max-w-xl">
+          <div class="space-y-4 p-6">
+            <h3 class="text-xl font-semibold">Account Details</h3>
+            <div class="flex items-center space-x-4">
+              <img src="https://placehold.co/96x96?text=You" alt="Profile" class="rounded-full w-24 h-24 object-cover" />
+              <div class="space-y-2">
+                <input type="file" accept="image/*" class="block text-sm" />
+                <p class="text-xs text-neutral-400">PNG/JPG up to 2MB</p>
+              </div>
+            </div>
+            <form class="space-y-3" novalidate>
+              <input class="w-full rounded-md bg-neutral-800 border border-neutral-700 px-3 py-2" placeholder="Full Name" required />
+              <input class="w-full rounded-md bg-neutral-800 border border-neutral-700 px-3 py-2" placeholder="Email" type="email" required />
+              <input class="w-full rounded-md bg-neutral-800 border border-neutral-700 px-3 py-2" placeholder="Phone" />
+              <input class="w-full rounded-md bg-neutral-800 border border-neutral-700 px-3 py-2" placeholder="New Password (optional)" type="password" minlength="6" />
+              <button class="bg-yellow-500 text-black hover:bg-yellow-400 rounded-2xl w-full py-2">Save Changes</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="ybt-card rounded-2xl max-w-xl">
+          <div class="space-y-4 p-6">
+            <h3 class="text-xl font-semibold">Linked Children</h3>
+            <div class="space-y-3">
+              <div class="flex items-center justify-between border rounded-xl p-3">
+                <div class="flex items-center space-x-3">
+                  <img src="https://placehold.co/64x64?text=JR" class="w-12 h-12 rounded-full object-cover" alt="">
+                  <div><p class="font-medium">Jordan Robinson</p><p class="text-xs text-neutral-400">Relation: Parent</p></div>
+                </div>
+                <div class="space-x-2"><button class="rounded-2xl border px-3 py-1">Edit</button><button class="rounded-2xl border px-3 py-1">Remove</button></div>
+              </div>
+              <div class="flex items-center justify-between border rounded-xl p-3">
+                <div class="flex items-center space-x-3">
+                  <img src="https://placehold.co/64x64?text=AR" class="w-12 h-12 rounded-full object-cover" alt="">
+                  <div><p class="font-medium">Avery Robinson</p><p class="text-xs text-neutral-400">Relation: Trusted Adult</p></div>
+                </div>
+                <div class="space-x-2"><button class="rounded-2xl border px-3 py-1">Edit</button><button class="rounded-2xl border px-3 py-1">Remove</button></div>
+              </div>
+            </div>
+            <div class="border rounded-xl p-4 space-y-3">
+              <h4 class="font-semibold">Link a Child</h4>
+              <input class="w-full rounded-md bg-neutral-800 border border-neutral-700 px-3 py-2" placeholder="Child Full Name" />
+              <input class="w-full rounded-md bg-neutral-800 border border-neutral-700 px-3 py-2" placeholder="Relation (Parent / Guardian / Trusted Adult)" />
+              <input class="w-full rounded-md bg-neutral-800 border border-neutral-700 px-3 py-2" type="file" accept="image/*" />
+              <button class="bg-yellow-500 text-black hover:bg-yellow-400 rounded-2xl px-4 py-2">Add Child</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t ybt-border bg-neutral-900"><div class="max-w-7xl mx-auto px-6 py-6 text-sm text-neutral-400">© 2025 YBT League</div></footer>
+</body>
+</html>

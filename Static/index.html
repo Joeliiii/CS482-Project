@@ -1,0 +1,76 @@
+<!doctype html>
+<html class="bg-neutral-950 text-neutral-100">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>YBT League — Home</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .ybt-card{background:#171717;border:1px solid rgba(234,179,8,.2)}
+    .ybt-border{border-color:rgba(234,179,8,.2)}
+  </style>
+</head>
+<body class="min-h-screen">
+  <header class="sticky top-0 z-50 bg-neutral-900/90 backdrop-blur border-b ybt-border">
+    <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-2">
+          <span class="inline-block w-8 h-8 rounded bg-yellow-500"></span>
+          <span class="font-extrabold tracking-tight text-lg">YBT&nbsp;League</span>
+        </div>
+        <nav class="hidden md:flex items-center space-x-6 text-sm">
+          <a class="hover:text-yellow-400 text-yellow-400" href="index.html">Home</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="schedule.html">Schedules</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="team.html">Teams</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="bracket.html">Brackets</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="livestreams.html">Videos</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="gallery.html">Gallery</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="sponsors.html">Sponsors</a>
+          <a class="hover:text-yellow-400 text-neutral-300" href="admin.html">Admin</a>
+        </nav>
+      </div>
+      <div class="space-x-2">
+        <a href="login.html"><button class="bg-yellow-500 text-black rounded-2xl px-4 py-2 hover:bg-yellow-400">Log In</button></a>
+        <a href="profile.html"><button class="rounded-2xl border px-4 py-2">Profile</button></a>
+      </div>
+    </div>
+    <div class="border-t ybt-border bg-neutral-900">
+      <div class="max-w-7xl mx-auto px-6 py-2 text-xs text-neutral-300 flex overflow-x-auto gap-6">
+        <span class="whitespace-nowrap"><strong class="text-yellow-400">Tigers</strong> 56 — 48 <strong class="text-yellow-400">Lions</strong></span>
+        <span class="whitespace-nowrap"><strong class="text-yellow-400">Hawks</strong> 50 — 42 <strong class="text-yellow-400">Bulls</strong></span>
+        <span class="whitespace-nowrap"><strong class="text-yellow-400">Wolves</strong> 61 — 59 <strong class="text-yellow-400">Eagles</strong></span>
+      </div>
+    </div>
+  </header>
+
+  <main class="space-y-16 px-6 py-10 max-w-7xl mx-auto">
+    <section class="text-center space-y-4">
+      <h1 class="text-5xl font-extrabold tracking-tight text-yellow-400">Youth Basketball Tournaments</h1>
+      <p class="text-lg text-neutral-300 max-w-xl mx-auto">
+        Organize, livestream, and compete in youth basketball tournaments nationwide. Sign up players, follow schedules, and enjoy vibrant community engagement.
+      </p>
+      <div class="flex items-center justify-center gap-3">
+        <a href="login.html">
+          <button class="bg-yellow-500 text-black hover:bg-yellow-400 rounded-2xl px-6 py-3">Get Started</button>
+        </a>
+        <a href="bracket.html">
+          <button class="rounded-2xl px-6 py-3 border border-yellow-400 text-neutral-100 hover:bg-yellow-500 hover:text-black hover:border-yellow-500">
+            View Brackets
+          </button>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t ybt-border bg-neutral-900">
+    <div class="max-w-7xl mx-auto px-6 py-6 text-sm text-neutral-400 flex flex-col md:flex-row items-center justify-between">
+      <p>© 2025 YBT League</p>
+      <nav class="flex gap-6">
+        <a class="hover:text-yellow-400" href="contact.html">Contact</a>
+        <a class="hover:text-yellow-400" href="index.html">Home</a>
+        <a class="hover:text-yellow-400" href="profile.html">Profile</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>
