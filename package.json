@@ -1,0 +1,25 @@
+{
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "memorystore": "^1.6.7",
+    "mongodb": "^6.20.0",
+    "mongoose": "^8.19.1",
+    "morgan": "^1.10.1"
+  },
+  "devDependencies": {
+    "cross-env": "^10.1.0",
+    "nodemon": "^3.1.10"
+  },
+  "scripts": {
+    "start": "cross-env DB_TARGET=real node Server.js",
+    "dev": "cross-env DB_TARGET=real nodemon Server.js",
+    "start:testdb": "cross-env DB_TARGET=test node Server.js",
+    "db:init": "node model/scripts/collections.js",
+    "db:init:test": "cross-env DB_TARGET=test node model/scripts/collections.js",
+    "build": "react-scripts build"
+  }
+}

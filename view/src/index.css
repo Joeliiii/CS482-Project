@@ -1,0 +1,27 @@
+:root{
+  --ybt-yellow:#eab308;
+  --ybt-yellow-2:#facc15;
+  --ybt-border:rgba(234,179,8,.25);
+}
+
+body{background-color:#0b0b0b;color:#e5e5e5;}
+.ybt-border{border-color:var(--ybt-border)!important}
+.ybt-card{background:#171717;border:1px solid var(--ybt-border);}
+.link-hover:hover{color:var(--ybt-yellow-2)!important}
+.bg-ybt{background:var(--ybt-yellow)!important;color:#111!important}
+.text-ybt{color:var(--ybt-yellow)!important}
+.navbar{background-color:rgba(18,18,18,.95)!important;border-bottom:1px solid var(--ybt-border);backdrop-filter:saturate(180%) blur(6px)}
+.ticker{border-top:1px solid var(--ybt-border);background:#111}
+.badge-live{background:#dc3545}
+.rounded-2xl{border-radius:1rem}
+
+/* Hide the "Brackets" link unless hovering over the navbar area */
+.navbar-hover-zone .brackets-wrapper {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity .15s ease-in-out;
+}
+.navbar-hover-zone:hover .brackets-wrapper {
+  visibility: visible;
+  opacity: 1;
+}
