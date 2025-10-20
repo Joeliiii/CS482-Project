@@ -20,6 +20,8 @@
     "start:testdb": "cross-env DB_TARGET=test node Server.js",
     "db:init": "node model/scripts/collections.js",
     "db:init:test": "cross-env DB_TARGET=test node model/scripts/collections.js",
-    "build": "react-scripts build"
+    "build": "react-scripts build",
+    "db:seed:roles": "node model/scripts/seedRoles.js",
+    "db:seed:roles:test": "cross-env DB_TARGET=test node model/scripts/seedRoles.js"
   }
 }
