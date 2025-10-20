@@ -102,3 +102,17 @@ Community & Sponsorship
 	Display sponsor logos.
 	
 	Contact page for potential sponsors to join.
+
+
+To Install:
+npm install
+cd view
+npm install
+
+to run:
+cd view
+npm run build
+cd ..
+npm run start
+
+Alternatively you can run the scripts in the package.json file.
