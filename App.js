@@ -14,6 +14,7 @@ const { ensureLoggedIn } = require('./middleware/auth'); // optional
 const app = express();
 const RoleController = require('./controller/RoleController');
 const { requireRole } = require('./middleware/roles');
+const ChildrenController = require('./controller/ChildrenController');
 
 
 // Middleware setup
@@ -34,6 +35,12 @@ app.post('/api/auth/signup', SignupController.signup);
 app.post('/api/auth/login', LoginController.login);
 app.post('/api/auth/logout', LoginController.logout);
 app.get('/api/auth/me', LoginController.me);
+
+// Children for the logged-in adult
+app.get('/api/me/children', ensureLoggedIn, ChildrenController.listMine);
+app.post('/api/me/children', ensureLoggedIn, ChildrenController.createMine);
+app.delete('/api/me/children/:childId', ensureLoggedIn, ChildrenController.deleteMine);
+
 
 // --- Serve React build ---
 const reactBuildPath = path.join(__dirname, 'view', 'build');
