@@ -35,12 +35,7 @@ export default function Layout({ user, children }) {
                             <div className="d-none d-md-flex align-items-center gap-3 me-3">
                                 <NavLink className="nav-link link-light link-hover" to="/schedule">Schedules</NavLink>
                                 <NavLink className="nav-link link-light link-hover" to="/team">Teams</NavLink>
-
-                                {/* Brackets only visible on hover */}
-                                <div className="brackets-wrapper">
-                                    <NavLink className="nav-link link-light link-hover" to="/bracket">Brackets</NavLink>
-                                </div>
-
+                                <NavLink className="nav-link link-light link-hover" to="/bracket">Brackets</NavLink>
                                 <NavLink className="nav-link link-light link-hover" to="/livestreams">Videos</NavLink>
                                 <NavLink className="nav-link link-light link-hover" to="/gallery">Gallery</NavLink>
                                 <NavLink className="nav-link link-light link-hover" to="/sponsors">Sponsors</NavLink>
