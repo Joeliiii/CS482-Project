@@ -6,7 +6,7 @@
 
 const express = require('express');
 const router = express.Router();
-const contactModel = require('../models/contact.js');
+const contactModel = require('../model/contact.js');
 
 //submit contact form
 router.post('/', async (req,res) => {
@@ -17,7 +17,7 @@ router.post('/', async (req,res) => {
             return res.status(400).json({error: 'Name, email, and message are required'})
         }
 
-        const emailRegex = /^[^\s@+@[^\s@+\.[^\s@]+$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)){
             return res.status(400).json({error: 'Invalid email format'});
         }
@@ -80,7 +80,7 @@ router.patch('/:id', async(req, res) => {
         }
 
         res.status(200).json({
-            message: 'Status updated',
+            message: 'Status updated successfully',
             data: message
         });
 
@@ -100,7 +100,7 @@ router.delete('/:id', async (req,res)=>{
         }
 
         res.status(200).json({message: 'Contact message deleted successfully'});
-        
+
     }catch(err){
         console.error('Delete contact error: ', err);
         res.status(500).json({error: 'Server error'});
