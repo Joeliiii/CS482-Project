@@ -59,4 +59,5 @@ app.post('/api/roles/assign', /* requireRole('admin'), */ RoleController.assignR
 app.post('/api/roles/revoke', /* requireRole('admin'), */ RoleController.revokeRole);
 app.get('/api/roles/user/:userId', /* requireRole('admin'), */ RoleController.listUserRoles);
 
-exports.app = app;
+//exports.app = app;
+module.exports = app;
