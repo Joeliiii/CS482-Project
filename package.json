@@ -12,7 +12,9 @@
   },
   "devDependencies": {
     "cross-env": "^10.1.0",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3"
   },
   "scripts": {
     "start": "cross-env DB_TARGET=real node Server.js",
@@ -22,6 +24,16 @@
     "db:init:test": "cross-env DB_TARGET=test node model/scripts/collections.js",
     "build": "react-scripts build",
     "db:seed:roles": "node model/scripts/seedRoles.js",
-    "db:seed:roles:test": "cross-env DB_TARGET=test node model/scripts/seedRoles.js"
-  }
+    "db:seed:roles:test": "cross-env DB_TARGET=test node model/scripts/seedRoles.js",
+    "test": "cross-env DB_TARGET=test jest --coverage",
+    "test:watch": "cross-env DB_TARGET=test jest --watch"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": ["/node_modules/"],
+    "testMatch": ["**/tests/**/*.test.js", "**/__tests__/**/*.test.js"]
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
