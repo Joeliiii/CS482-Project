@@ -25,4 +25,4 @@ const DB_TARGET = process.env.DB_TARGET || (process.env.NODE_ENV === 'test' ? 't
 process.on('SIGINT', async () => { try { await dbcon.disconnect(); } finally { process.exit(0); } });
 process.on('SIGTERM', async () => { try { await dbcon.disconnect(); } finally { process.exit(0); } });
 
-module.exports = app;
+//module.exports = app;
