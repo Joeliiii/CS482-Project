@@ -16,6 +16,8 @@ const RoleController = require('./controller/RoleController');
 const { requireRole } = require('./middleware/roles');
 const ChildrenController = require('./controller/ChildrenController');
 
+//adding contactRoute
+const contactRoutes = require('./routes/contact');
 
 // Middleware setup
 app.use(morgan('dev'));
@@ -41,6 +43,8 @@ app.get('/api/me/children', ensureLoggedIn, ChildrenController.listMine);
 app.post('/api/me/children', ensureLoggedIn, ChildrenController.createMine);
 app.delete('/api/me/children/:childId', ensureLoggedIn, ChildrenController.deleteMine);
 
+//contactRoutes
+app.use('/api/contact', contactRoutes);
 
 // --- Serve React build ---
 const reactBuildPath = path.join(__dirname, 'view', 'build');
