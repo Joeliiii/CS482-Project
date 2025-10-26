@@ -5,8 +5,8 @@ const dbcon = require('./model/DBConnection');
 const app = require('./App');
 
 //for routes --> contact
-const contactRoutes = require('./routes/contact');
-app.use('/api/contact', contactRoutes);
+//const contactRoutes = require('./routes/contact');
+//app.use('/api/contact', contactRoutes);
 
 const PORT = Number(process.env.PORT || 4000);
 const HOST = process.env.HOSTNAME || 'localhost';
