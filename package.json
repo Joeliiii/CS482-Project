@@ -14,7 +14,8 @@
     "@types/jest": "^30.0.0",
     "cross-env": "^10.1.0",
     "jest": "^30.2.0",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "supertest": "^6.3.3"
   },
   "scripts": {
     "start": "cross-env DB_TARGET=real node Server.js",

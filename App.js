@@ -16,6 +16,8 @@ const RoleController = require('./controller/RoleController');
 const { requireRole } = require('./middleware/roles');
 const ChildrenController = require('./controller/ChildrenController');
 
+//adding contactRoute
+const contactRoutes = require('./routes/contact');
 
 // Middleware setup
 app.use(morgan('dev'));
@@ -41,6 +43,8 @@ app.get('/api/me/children', ensureLoggedIn, ChildrenController.listMine);
 app.post('/api/me/children', ensureLoggedIn, ChildrenController.createMine);
 app.delete('/api/me/children/:childId', ensureLoggedIn, ChildrenController.deleteMine);
 
+//contactRoutes
+app.use('/api/contact', contactRoutes);
 
 // --- Serve React build ---
 const reactBuildPath = path.join(__dirname, 'view', 'build');
@@ -59,4 +63,5 @@ app.post('/api/roles/assign', /* requireRole('admin'), */ RoleController.assignR
 app.post('/api/roles/revoke', /* requireRole('admin'), */ RoleController.revokeRole);
 app.get('/api/roles/user/:userId', /* requireRole('admin'), */ RoleController.listUserRoles);
 
-exports.app = app;
+//exports.app = app;
+module.exports = app;
