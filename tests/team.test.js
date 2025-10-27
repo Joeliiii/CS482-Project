@@ -158,3 +158,5 @@ describe('Team API tests', () => {
    });
 
 });
+
+//Code Coverage tests, test script, and Code Coverage of Iteration 1
