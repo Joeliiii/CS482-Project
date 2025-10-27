@@ -10,7 +10,7 @@ const teamModel = require('../model/team.js');
 
 describe('Team API tests', () => {
     beforeEach(async () => {
-        await contactModel.deleteAll();
+        await teamModel.deleteAll();
     });
 
     afterAll(async () =>{
@@ -65,7 +65,7 @@ describe('Team API tests', () => {
             name: 'Tigers',
             season: '2025',
             coach: 'John Smith',
-            win: 56,
+            wins: 56,
             losses: 48,
             logo: 'tigers.png'
         });
@@ -73,7 +73,7 @@ describe('Team API tests', () => {
             name: 'Tigers',
             season: '2025',
             coach: 'John Smith',
-            win: 56,
+            wins: 56,
             losses: 48,
             logo: 'tigers.png'
         });
@@ -83,7 +83,7 @@ describe('Team API tests', () => {
         
         expect(response.body.length).toBe(2);
         expect(response.body[0].name).toBeDefined();
-        expect(response.body[0].toBedefined());
+        expect(response.body[0]).toBedefined();
     });
 
     //test 5 getting single team ID, and playerCount
@@ -98,7 +98,7 @@ describe('Team API tests', () => {
             logo: 'hawks.png'
         });
         const response = await request(app)
-            .get('/api/teams/${team._id}')
+            .get(`/api/teams/${team._id}`)
             .expect(200);
 
         expect(response.body.name).toBe('Baltimore Hawks');
@@ -122,7 +122,7 @@ describe('Team API tests', () => {
         });
 
         const response = await request(app)
-            .patch('/api/teams/${team._id}')
+            .patch(`/api/teams/${team._id}`)
             .send({wins:51, losses: 42})
             .expect(200);
 
@@ -139,7 +139,7 @@ describe('Team API tests', () => {
         });
 
         await request(app)
-            .delete('/api/teams/${team._id}')
+            .delete(`/api/teams/${team._id}`)
             .expect(200);
 
         const deleted = await teamModel.readOne(team._id);
@@ -151,7 +151,7 @@ describe('Team API tests', () => {
         const fakeId = new mongoose.Types.ObjectId();
 
         const response = await request(app)
-            .get('/api/teams/${fakeId}')
+            .get(`/api/teams/${fakeId}`)
             .expect(404);
 
         expect(response.body.error).toBe('Team not found');
