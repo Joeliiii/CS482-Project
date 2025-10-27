@@ -43,7 +43,7 @@ describe('Team API tests', () => {
             .post('/api/teams')
             .send(teamData)
             .expect(400);
-        expect(response.body.error).toBe('Team name is required');
+        expect(response.body.error).toBe('Team name and Season are required');
     });
 
     //test 3 missing season
@@ -56,7 +56,7 @@ describe('Team API tests', () => {
             .post('/api/teams')
             .send(teamData)
             .expect(400);
-        expect(response.body.error).toBe('Season is required');
+        expect(response.body.error).toBe('Team name and Season are required');
     });
 
     //test 4 getting all teams
