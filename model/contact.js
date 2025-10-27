@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 //schema blueprint for the model
 const ContactSchema = new mongoose.Schema({
     name: { type: String, required: true},
-    email: { type: String, required: true},
+    email: { type: String, required: true, unique: true},
     message: { type: String, required: true },
     status: { type: String, default: 'unread' },
     created_at: { type: Date, default: Date.now }
