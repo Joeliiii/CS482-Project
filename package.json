@@ -26,7 +26,8 @@
     "build": "react-scripts build",
     "db:seed:roles": "node model/scripts/seedRoles.js",
     "db:seed:roles:test": "cross-env DB_TARGET=test node model/scripts/seedRoles.js",
-    "test": "jest --runInBand"
+    "test": "cross-env DB_TARGET=test jest --coverage --forceExit",
+    "test:watch": "cross-env DB_TARGET=test jest --watch"
   },
   "jest": {
     "testEnvironment": "node",
