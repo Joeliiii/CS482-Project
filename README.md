@@ -5,6 +5,10 @@ User Stories spreadsheet:
 
 https://docs.google.com/spreadsheets/d/1EZ5Bp3XK5Yia1kK6OZkUPmyaWaAfsjPJoRD88H_RMCI/edit?usp=sharing
 
+Kanban Board: 
+
+https://lucid.app/lucidspark/44e9f85b-c227-4bde-af42-80042080f08a/edit?viewport_loc=-2405%2C-2497%2C6250%2C2775%2C0_0&invitationId=inv_fa85a717-f4d7-4999-9b34-a99637db8b62
+
 Requirements Fielded:
 
 Organize basketball tournaments targeting kids underage.
