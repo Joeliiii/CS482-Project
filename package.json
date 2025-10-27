@@ -11,9 +11,10 @@
     "morgan": "^1.10.1"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "cross-env": "^10.1.0",
+    "jest": "^30.2.0",
     "nodemon": "^3.1.10",
-    "jest": "^29.7.0",
     "supertest": "^6.3.3"
   },
   "scripts": {
@@ -25,15 +26,12 @@
     "build": "react-scripts build",
     "db:seed:roles": "node model/scripts/seedRoles.js",
     "db:seed:roles:test": "cross-env DB_TARGET=test node model/scripts/seedRoles.js",
-    "test": "cross-env DB_TARGET=test jest --coverage --forceExit",
-    "test:watch": "cross-env DB_TARGET=test jest --watch"
+    "test": "jest --runInBand"
   },
   "jest": {
     "testEnvironment": "node",
-    "coveragePathIgnorePatterns": ["/node_modules/"],
-    "testMatch": ["**/tests/**/*.test.js", "**/__tests__/**/*.test.js"]
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ]
+  }
 }
