@@ -50,6 +50,10 @@ app.use('/api/contact', contactRoutes);
 const reactBuildPath = path.join(__dirname, 'view', 'build');
 app.use(express.static(reactBuildPath));
 
+//TEAM routes
+const teamRoutes = require('./routes/team');
+app.use('/api/teams', teamRoutes);
+
 // --- SPA fallback ---
 app.get(/.*/, (req, res) => {
     res.sendFile(path.join(reactBuildPath, 'index.html'));
