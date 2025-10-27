@@ -16,8 +16,7 @@ router.post('/', async (req,res) => {
             return res.status(400).json({error: 'Team name and Season are required'})
         }
 
-        const seasonRegex = /^\d{4}$/;
-        if (!emailRegex.test(season)){
+        if (!/^\d{4}$/.test(season)){
             return res.status(400).json({error: 'Invalid season format'});
         }
 
@@ -36,21 +35,21 @@ router.post('/', async (req,res) => {
     }
 });
 
-//get all message
+//get all teams
 router.get('/', async (req, res) => {
     try {
         const teams = await teamModel.readAll();
-        res.status(200).json(messages);
+        res.status(200).json(teams);
     }catch(err){
-        console.error('Fetch contact error: ', err);
+        console.error('Fetch teams error: ', err);
         res.status(500).json({error: 'Server error'});
     }
 });
 
-//getting team by name
-router.get('/season/:season', async (req, res) => {
+//getting team by ID
+router.get('/:id', async (req, res) => {
     try {
-        const team = await teamModel.readBySeason(req.params.id);
+        const team = await teamModel.readOne(req.params.id);
    
         if(!team){
             return res.status(404).json({error: 'Team not found'});
