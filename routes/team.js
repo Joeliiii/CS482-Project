@@ -5,7 +5,7 @@
 
 const express = require('express');
 const router = express.Router();
-const contactModel = require('../model/team.js');
+const teamModel = require('../model/team.js');
 
 //submit contact form
 router.post('/', async (req,res) => {
@@ -46,6 +46,31 @@ router.get('/', async (req, res) => {
     }
 });
 
+//getting team by season
+router.get('/season/:season', async (req, res) => {
+    try {
+        const team = await teamModel.readBySeason(req.params.id);
+        res.status(200).json(teams);
+    }catch(err){
+        console.error('Fetch team error: ', err);
+        res.status(500).json({error: 'Server error'});
+    }
+});
+
+//getting team by name
+router.get('/by-name/:name', async (req, res) => {
+    try {
+        const team = await teamModel.readByName(req.params.id);
+        if(!team){
+            return res.status(404).json({error: 'Team not found'});
+        }
+        res.status(200).json(team);
+    }catch(err){
+        console.error('Fetch team error: ', err);
+        res.status(500).json({error: 'Server error'});
+    }
+});
+
 //getting team by ID
 router.get('/:id', async (req, res) => {
     try {
@@ -62,7 +87,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-//update status
+//update team info
 router.patch('/:id', async(req, res) => {
     try{
         const team = await teamModel.update(req.params.id, req.body);
@@ -78,6 +103,26 @@ router.patch('/:id', async(req, res) => {
 
     }catch(err){
         console.error('Update team error: ', err);
+        res.status(500).json({error: 'Server error'});
+    }
+});
+
+//update team logo
+router.patch('/:id', async(req, res) => {
+    try{
+        const team = await teamModel.update(req.params.id, req.body);
+
+        if(!team){
+            return res.status(404).json({error:'Team not found'});
+        }
+
+        res.status(200).json({
+            message: 'Logo updated successfully',
+            data: team
+        });
+
+    }catch(err){
+        console.error('Update logo error: ', err);
         res.status(500).json({error: 'Server error'});
     }
 });
