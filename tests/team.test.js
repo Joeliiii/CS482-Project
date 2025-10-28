@@ -9,13 +9,21 @@ const app = require('../Server.js');
 const teamModel = require('../model/team.js');
 
 describe('Team API tests', () => {
+    beforeAll(async () => {
+        try{
+            await mongoose.connection.db.dropCollection('teams');
+        }catch(err){
+
+        }
+    });
+
     beforeEach(async () => {
         await teamModel.deleteAll();
     });
 
     afterAll(async () =>{
         await mongoose.connection.close();
-});
+    });
 
     //test1: creating a team
     test('POST /api/teams - should create new team', async () => {
