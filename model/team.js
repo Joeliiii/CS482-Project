@@ -1,85 +1,57 @@
-/**
- * Model for Team 
- * User Story S9 - team logos and profiles
- */
-
+// model/team.js
 const mongoose = require('mongoose');
 
-//schema blueprint for the model
-const TeamSchema = new mongoose.Schema({
-    name: { type: String, required: true},
-    season: { type: String, required: true},
-    coach: { type: String, required: false },
-    logo: { type: String, default: 'logo.png' },
-    wins: { type: Number, default: 0 },
-    losses: { type: Number, default: 0 },
-    playerCount: { type: Number, default: 0 },
-    created_at: { type: Date, default: Date.now }
-});
+const TeamSchema = new mongoose.Schema(
+    {
+        name: { type: String, required: true, trim: true },
+        season: { type: String, required: true, trim: true }, // e.g. "2025"
+        coach: { type: String, default: '', trim: true },
+        logo: { type: String, default: 'logo.png', trim: true },
+        wins: { type: Number, default: 0 },
+        losses: { type: Number, default: 0 },
+        playerCount: { type: Number, default: 0 },
+    },
+    {
+        timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+    }
+);
 
+// Single compound unique index — avoids duplicate-index warnings
 TeamSchema.index({ name: 1, season: 1 }, { unique: true });
 
-//creating the team model blueprint for the database
-const teamModel = mongoose.models.Team || mongoose.model('team', TeamSchema);
+// Create or reuse the model safely (prevents OverwriteModelError)
+const Team =
+    mongoose.models.Team || mongoose.model('Team', TeamSchema);
 
-//creating new team
-exports.create = async function(teamData) {
-    //contactdata -- parameter for whatever is being passed to the function
-    let team = new teamModel(teamData);
-    await team.save();
-    return team; 
-}
 
-//read messages for testing and functioning 
-//either sort, delete messages later
-exports.readAll = async function(){
-   //let lstContacts = await contactModel.find();
-   //return lstContacts;
-   return await teamModel.find({});
-}
+Team.readAll = function () {
+    return this.find({});
+};
 
-//for testing 
-//admin control for spam
-//user wants to remove
-exports.readOne = async function(id){
-    //let contact = await contactModel.findById(id);
-    //find().sort({name:'James'}).skip(0).limit(5);
-    //return contact;
-    return await teamModel.findById(id);
-}
+Team.readOne = function (id) {
+    return this.findById(id);
+};
 
-exports.readByName = async function(name){
-    //let contact = await contactModel.findById(id);
-    //find().sort({name:'James'}).skip(0).limit(5);
-    //return contact;
-    return await teamModel.findOne({name:name});
-}
+Team.readByName = function (name) {
+    return this.findOne({ name });
+};
 
-exports.readBySeason = async function(season){
-    //let contact = await contactModel.findById(id);
-    //find().sort({name:'James'}).skip(0).limit(5);
-    //return contact;
-    return await teamModel.find({season: season});
-}
+Team.readBySeason = function (season) {
+    return this.find({ season });
+};
 
-//updating the status of the teams
-exports.update = async function (id, updateData){
-    let team = await teamModel.findByIdAndUpdate(
-        id,
-        updateData,
-        { new: true}
-    );
-    return team;
-}
 
-//if admin wants to delete a specific team
-//user wants to remove the submission
-exports.deleteOne = async function(id){
-    let team = await teamModel.findByIdAndDelete(id);
-    return team;
-}
+Team.update = function (id, updateData) {
+    return this.findByIdAndUpdate(id, updateData, { new: true });
+};
 
-//for testing only, to start with a clear databse before each test
-exports.deleteAll = async function(){
-    await teamModel.deleteMany();
-}
+Team.deleteOne = function (id) {
+    // wrapper to keep old signature deleteOne(id)
+    return this.findByIdAndDelete(id);
+};
+
+Team.deleteAll = function () {
+    return this.deleteMany({});
+};
+
+module.exports = Team;

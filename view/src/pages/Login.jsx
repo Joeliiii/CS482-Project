@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-export default function Login() {
+export default function Login({ onAuthed }) {
     const navigate = useNavigate()
     const [form, setForm] = useState({ email: '', password: '' })
     const [submitting, setSubmitting] = useState(false)
@@ -14,25 +14,27 @@ export default function Login() {
         setError('')
         setSubmitting(true)
         try {
-            // If your frontend runs on a different origin in dev, keep credentials: 'include'
-            // and ensure server CORS has credentials:true and origin:['http://localhost:5173'].
             const res = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
+                credentials: 'include',       // keep this so the session cookie is stored
                 body: JSON.stringify(form),
             })
 
             const data = await res.json().catch(() => ({}))
-
             if (!res.ok) {
                 setError(data.message || 'Invalid credentials.')
                 setSubmitting(false)
                 return
             }
 
-            // success: session cookie set by server; go to profile
-            navigate('/profile')
+            // data shape from your LoginController: { user, roles, isAdmin }
+            if (onAuthed && data?.user) {
+                onAuthed({ ...data.user, roles: data.roles || [], isAdmin: !!data.isAdmin })
+            }
+
+            // Navigate wherever makes sense; send admins to /admin
+            navigate(data?.isAdmin ? '/admin' : '/profile')
         } catch (err) {
             setError('Network error. Please try again.')
             setSubmitting(false)

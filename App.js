@@ -10,20 +10,28 @@ const memorystore = require('memorystore')(session);
 const SignupController = require('./controller/SignupController');
 const LoginController = require('./controller/LoginController');
 const UserController = require('./controller/UserController');
-const { ensureLoggedIn } = require('./middleware/auth'); // optional
-const app = express();
 const RoleController = require('./controller/RoleController');
-const { requireRole } = require('./middleware/roles');
 const ChildrenController = require('./controller/ChildrenController');
+const AdminController = require('./controller/AdminController');
 
-//adding contactRoute
-const contactRoutes = require('./routes/contact');
+// --- Middleware ---
+const { ensureLoggedIn } = require('./middleware/auth');
+const { requireRole } = require('./middleware/roles');
 
-// Middleware setup
+const app = express();
+
+// --- Core middleware ---
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cors());
+
+// If your FE runs on a different origin in dev, keep credentials + explicit origins.
+// If FE is served by the same origin, you can simplify to app.use(cors()).
+app.use(cors({
+    origin: ['http://localhost:5173', 'http://localhost:3000'],
+    credentials: true
+}));
+
 app.use(session({
     secret: 'Pineapple - Guava - Orange',
     cookie: { maxAge: 86400000 },
@@ -32,40 +40,68 @@ app.use(session({
     saveUninitialized: true
 }));
 
-// --- API Routes ---
+// ---------------------------
+// API ROUTES (must be BEFORE SPA fallback)
+// ---------------------------
+
+// Auth
 app.post('/api/auth/signup', SignupController.signup);
-app.post('/api/auth/login', LoginController.login);
+app.post('/api/auth/login',  LoginController.login);
 app.post('/api/auth/logout', LoginController.logout);
-app.get('/api/auth/me', LoginController.me);
+app.get('/api/auth/me',      LoginController.me);
+
+// Me / Profile
+app.put('/api/user/me', ensureLoggedIn, UserController.updateMe);
 
 // Children for the logged-in adult
-app.get('/api/me/children', ensureLoggedIn, ChildrenController.listMine);
-app.post('/api/me/children', ensureLoggedIn, ChildrenController.createMine);
-app.delete('/api/me/children/:childId', ensureLoggedIn, ChildrenController.deleteMine);
+app.get('/api/me/children',              ensureLoggedIn, ChildrenController.listMine);
+app.post('/api/me/children',             ensureLoggedIn, ChildrenController.createMine);
+app.delete('/api/me/children/:childId',  ensureLoggedIn, ChildrenController.deleteMine);
 
-//contactRoutes
+// Roles (you can re-enable admin guard when ready)
+app.post('/api/roles/assign', RoleController.assignRole);
+app.post('/api/roles/revoke', RoleController.revokeRole);
+app.get('/api/roles/user/:userId', RoleController.listUserRoles);
+
+// Contact + Teams
+const contactRoutes = require('./routes/contact');
 app.use('/api/contact', contactRoutes);
 
-// --- Serve React build ---
-const reactBuildPath = path.join(__dirname, 'view', 'build');
-app.use(express.static(reactBuildPath));
-
-//TEAM routes
 const teamRoutes = require('./routes/team');
 app.use('/api/teams', teamRoutes);
 
-// --- SPA fallback ---
-app.get(/.*/, (req, res) => {
+// --- Admin (protect with admin role) ---
+app.get('/api/admin/users', requireRole('admin'), AdminController.listUsers);
+app.put('/api/admin/users/:userId', requireRole('admin'), AdminController.updateUser);
+app.put('/api/admin/users/:userId/roles', requireRole('admin'), AdminController.updateUserRoles);
+app.get('/api/admin/children/:userId', requireRole('admin'), AdminController.listChildren);
+app.get('/api/admin/overview', requireRole('admin'), AdminController.overview);
+
+// Per-user roles helpers
+app.get('/api/admin/users/:userId/roles', requireRole('admin'), AdminController.listUserRoles);
+app.post('/api/admin/roles/assign', requireRole('admin'), AdminController.assignRole);
+app.post('/api/admin/roles/revoke', requireRole('admin'), AdminController.revokeRole);
+
+// Teams
+app.get('/api/admin/teams', requireRole('admin'), AdminController.listTeams);
+app.post('/api/admin/teams', requireRole('admin'), AdminController.createTeam);
+app.put('/api/admin/teams/:teamId', requireRole('admin'), AdminController.updateTeam);
+app.delete('/api/admin/teams/:teamId', requireRole('admin'), AdminController.deleteTeam);
+
+// Events
+app.get('/api/admin/events', requireRole('admin'), AdminController.listEvents);
+app.post('/api/admin/events', requireRole('admin'), AdminController.createEvent);
+app.put('/api/admin/events/:eventId', requireRole('admin'), AdminController.updateEvent);
+app.delete('/api/admin/events/:eventId', requireRole('admin'), AdminController.deleteEvent);
+// ---------------------------
+// Static + SPA fallback
+// ---------------------------
+const reactBuildPath = path.join(__dirname, 'view', 'build');
+app.use(express.static(reactBuildPath));
+
+// SPA fallback: only for non-API GETs
+app.get(/^\/(?!api).*/, (req, res) => {
     res.sendFile(path.join(reactBuildPath, 'index.html'));
 });
 
-// Update profile (requires login)
-app.put('/api/user/me', ensureLoggedIn, UserController.updateMe);
-
-// Role APIs
-app.post('/api/roles/assign', /* requireRole('admin'), */ RoleController.assignRole);
-app.post('/api/roles/revoke', /* requireRole('admin'), */ RoleController.revokeRole);
-app.get('/api/roles/user/:userId', /* requireRole('admin'), */ RoleController.listUserRoles);
-
-//exports.app = app;
 module.exports = app;

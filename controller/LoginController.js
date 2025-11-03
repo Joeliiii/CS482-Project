@@ -2,17 +2,13 @@
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const User = require('../model/User');
-const Role = require('../model/Role');
 const UserRole = require('../model/UserRole');
 
 exports.login = async (req, res) => {
     try {
         let { email, password } = req.body || {};
         email = (email || '').trim().toLowerCase();
-
-        if (!email || !password) {
-            return res.status(400).json({ message: 'Email and password required.' });
-        }
+        if (!email || !password) return res.status(400).json({ message: 'Email and password required.' });
 
         const user = await User.findOne({ email }).lean();
         if (!user) return res.status(401).json({ message: 'Invalid credentials.' });
@@ -20,18 +16,17 @@ exports.login = async (req, res) => {
         const ok = await bcrypt.compare(password, user.passwordHash);
         if (!ok) return res.status(401).json({ message: 'Invalid credentials.' });
 
-        // Fetch roles
+        // roles
         const rolesAgg = await UserRole.aggregate([
             { $match: { userId: new mongoose.Types.ObjectId(user._id) } },
             { $lookup: { from: 'roles', localField: 'roleId', foreignField: '_id', as: 'role' } },
             { $unwind: '$role' },
             { $project: { _id: 0, name: '$role.name' } }
         ]);
-
         const roles = rolesAgg.map(r => r.name);
         const isAdmin = roles.includes('admin');
 
-        // Set session
+        // session
         req.session.userId = String(user._id);
         req.session.isAdmin = isAdmin;
 
@@ -43,9 +38,10 @@ exports.login = async (req, res) => {
                 username: user.username,
                 phone: user.phone,
                 isVerified: user.isVerified,
-                createdAt: user.createdAt,
-                roles
-            }
+                createdAt: user.createdAt
+            },
+            roles,               // <— include roles array
+            isAdmin              // <— include boolean
         });
     } catch (err) {
         console.error('login error:', err);
@@ -68,13 +64,14 @@ exports.me = async (req, res) => {
         const user = await User.findById(userId).lean();
         if (!user) return res.status(404).json({ message: 'User not found.' });
 
-        // Include roles in /me
         const rolesAgg = await UserRole.aggregate([
             { $match: { userId } },
             { $lookup: { from: 'roles', localField: 'roleId', foreignField: '_id', as: 'role' } },
             { $unwind: '$role' },
-            { $project: { _id: 0, name: '$role.name', displayName: '$role.displayName' } }
+            { $project: { _id: 0, name: '$role.name' } }
         ]);
+        const roles = rolesAgg.map(r => r.name);
+        const isAdmin = roles.includes('admin');
 
         return res.json({
             id: user._id,
@@ -83,7 +80,8 @@ exports.me = async (req, res) => {
             phone: user.phone,
             isVerified: user.isVerified,
             createdAt: user.createdAt,
-            roles: rolesAgg.map(r => r.name)
+            roles,
+            isAdmin              // <— include boolean here too
         });
     } catch (err) {
         console.error('me error:', err);

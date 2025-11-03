@@ -40,6 +40,7 @@ export default function Layout({ user, children }) {
                                 <NavLink className="nav-link link-light link-hover" to="/gallery">Gallery</NavLink>
                                 <NavLink className="nav-link link-light link-hover" to="/sponsors">Sponsors</NavLink>
                                 <NavLink className="nav-link link-light link-hover" to="/contact">Contact</NavLink>
+                                <NavLink className="nav-link link-light link-hover" to="/tickets">Tickets</NavLink>
                                 {user?.isAdmin && (
                                     <NavLink className="nav-link link-light link-hover text-ybt" to="/admin">Admin</NavLink>
                                 )}
