@@ -188,11 +188,16 @@ exports.deleteUser = async (req, res) => {
         const { userId } = req.params;
         const uid = new mongoose.Types.ObjectId(userId);
 
+        // Find the adult record for this user (if any)
+        const adult = Adult ? await Adult.findOne({ userId: uid }).lean() : null;
+
         await Promise.all([
             User.deleteOne({ _id: uid }),
             UserRole.deleteMany({ userId: uid }),
             Adult ? Adult.deleteOne({ userId: uid }) : Promise.resolve(),
-            AdultChildLink ? AdultChildLink.deleteMany({ adultId: uid }) : Promise.resolve()
+            AdultChildLink && adult
+                ? AdultChildLink.deleteMany({ adultId: adult._id })
+                : Promise.resolve()
         ]);
 
         res.status(200).json({ message: 'User deleted.' });
@@ -273,33 +278,89 @@ exports.revokeRole = async (req, res) => {
     }
 };
 
+exports.assignChildToTeam = async (req, res) => {
+    try {
+        if (!Child || !Team) {
+            return res.status(500).json({ message: 'Child/Team models not available.' });
+        }
+
+        const { childId } = req.params;
+        const { teamId } = req.body;
+
+        if (!teamId) {
+            return res.status(400).json({ message: 'teamId is required.' });
+        }
+
+        // Ensure team exists
+        const team = await Team.findById(teamId).lean();
+        if (!team) {
+            return res.status(404).json({ message: 'Team not found.' });
+        }
+
+        // Update child
+        const updated = await Child.findByIdAndUpdate(
+            childId,
+            { teamId: team._id },
+            { new: true }
+        ).lean();
+
+        if (!updated) {
+            return res.status(404).json({ message: 'Child not found.' });
+        }
+
+        return res.json({
+            message: 'Child assigned to team.',
+            child: updated,
+            team: { _id: team._id, name: team.name, season: team.season }
+        });
+    } catch (e) {
+        console.error('assignChildToTeam error:', e);
+        return res.status(500).json({ message: 'Server error.' });
+    }
+};
+
 /* =========================================================
  * Children by User (for admin view)
  * =======================================================*/
 exports.listChildren = async (req, res) => {
     try {
-        if (!Adult || !Child || !AdultChildLink) {
-            return res.json({ items: [] });
-        }
         const { userId } = req.params;
-        const uid = new mongoose.Types.ObjectId(userId);
 
-        const adult = await Adult.findOne({ userId: uid }).lean();
-        if (!adult) return res.json({ items: [] });
+        // 1) Find the Adult record tied to this User
+        const adult = await Adult.findOne({ userId }).lean();
+        if (!adult) {
+            // No adult profile → no children
+            return res.json([]);
+        }
 
-        const links = await AdultChildLink.find({ adultId: adult._id }).lean();
-        const childIds = links.map(l => l.childId);
-        const children = childIds.length ? await Child.find({ _id: { $in: childIds } }).lean() : [];
+        // 2) Join AdultChildLink -> Child to get each child for that adult
+        const children = await AdultChildLink.aggregate([
+            { $match: { adultId: adult._id } },
+            {
+                $lookup: {
+                    from: Child.collection.name,       // "children"
+                    localField: 'childId',
+                    foreignField: '_id',
+                    as: 'child'
+                }
+            },
+            { $unwind: '$child' },
+            {
+                $project: {
+                    _id: '$child._id',
+                    fullName: '$child.fullName',
+                    birthdate: '$child.birthdate',
+                    photoUrl: '$child.photoUrl',
+                    relation: '$relation',
+                    isPrimary: '$isPrimary'
+                }
+            }
+        ]);
 
-        res.json({ items: children.map(c => ({
-                id: c._id,
-                fullName: c.fullName,
-                birthdate: c.birthdate,
-                photoUrl: c.photoUrl || ''
-            }))});
+        return res.json(children);
     } catch (e) {
         console.error('listChildren error:', e);
-        res.status(500).json({ message: 'Server error.' });
+        return res.status(500).json({ message: 'Server error.' });
     }
 };
 

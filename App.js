@@ -87,6 +87,9 @@ app.get('/api/admin/teams', requireRole('admin'), AdminController.listTeams);
 app.post('/api/admin/teams', requireRole('admin'), AdminController.createTeam);
 app.put('/api/admin/teams/:teamId', requireRole('admin'), AdminController.updateTeam);
 app.delete('/api/admin/teams/:teamId', requireRole('admin'), AdminController.deleteTeam);
+app.delete('/api/admin/users/:userId', requireRole('admin'), AdminController.deleteUser);
+app.put('/api/admin/children/:childId/team', requireRole('admin'), AdminController.assignChildToTeam);
+
 
 // Events
 app.get('/api/admin/events', requireRole('admin'), AdminController.listEvents);
