@@ -1,27 +1,35 @@
-/**
- * Author: Nishant Gurung
- * User Story S9
- */
+// routes/team.js
+
 const express = require('express');
 const router = express.Router();
-const teamModel = require('../model/team.js');
+const Team = require('../model/team'); // Mongoose Team model
 
-// Create team
 router.post('/', async (req, res) => {
     try {
-        const { name, season, coach, logo } = req.body;
+        const { name, season, coach = '', logo = '' } = req.body;
 
         if (!name || !season) {
-            return res.status(400).json({ error: 'Team name and Season are required' });
+            return res.status(400).json({ error: 'Team name and season are required' });
         }
-        if (!/^\d{4}$/.test(season)) {
+
+        if (!/^\d{4}$/.test(String(season))) {
             return res.status(400).json({ error: 'Invalid season format (use YYYY)' });
         }
 
-        const team = await teamModel.create({ name, season, coach, logo });
-        res.status(201).json({ message: 'Team created successfully!', id: team._id });
+        const team = await Team.create({
+            name: name.trim(),
+            season: String(season),
+            coach: coach.trim(),
+            logo: logo.trim(),
+        });
+
+        res.status(201).json({
+            message: 'Team created successfully!',
+            id: team._id,
+            team,
+        });
     } catch (err) {
-        if (err && err.code === 11000) {
+        if (err.code === 11000) {
             return res.status(409).json({ error: 'Team already exists in this season' });
         }
         console.error('Team creation error:', err);
@@ -29,10 +37,10 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Get all teams
-router.get('/', async (_req, res) => {
+
+router.get('/', async (req, res) => {
     try {
-        const teams = await teamModel.readAll();
+        const teams = await Team.find().sort({ season: -1, name: 1 }).lean();
         res.status(200).json(teams);
     } catch (err) {
         console.error('Fetch teams error:', err);
@@ -40,87 +48,73 @@ router.get('/', async (_req, res) => {
     }
 });
 
-// Get teams by season (e.g., /api/teams/season/2025)
-router.get('/season/:season', async (req, res) => {
+
+router.get('/with-players', async (req, res) => {
     try {
-        const { season } = req.params;
-        const teams = await teamModel.readBySeason(season);
-        res.status(200).json(teams);
+        const teams = await Team.find().sort({ season: -1, name: 1 }).lean();
+
+        // For now, players is just an empty array.
+        // Later you can populate from a TeamPlayer / Child link.
+        const enriched = teams.map(t => ({
+            id: t._id,
+            name: t.name,
+            season: t.season,
+            coach: t.coach || '',
+            logo: t.logo || '',
+            wins: t.wins ?? 0,
+            losses: t.losses ?? 0,
+            playerCount: t.playerCount ?? 0,
+            players: [] // TODO: wire real roster here
+        }));
+
+        res.json(enriched);
     } catch (err) {
-        console.error('Fetch teams by season error:', err);
+        console.error('Fetch teams with players error:', err);
         res.status(500).json({ error: 'Server error' });
     }
 });
 
-// Get a team by name (first match)
-router.get('/by-name/:name', async (req, res) => {
-    try {
-        const { name } = req.params;
-        const team = await teamModel.readByName(name);
-        if (!team) return res.status(404).json({ error: 'Team not found' });
-        res.status(200).json(team);
-    } catch (err) {
-        console.error('Fetch team by name error:', err);
-        res.status(500).json({ error: 'Server error' });
-    }
-});
-
-// Get team by ID (place AFTER more specific routes)
 router.get('/:id', async (req, res) => {
     try {
-        const team = await teamModel.readOne(req.params.id);
-        if (!team) return res.status(404).json({ error: 'Team not found' });
+        const team = await Team.findById(req.params.id).lean();
+        if (!team) {
+            return res.status(404).json({ error: 'Team not found' });
+        }
         res.status(200).json(team);
     } catch (err) {
-        console.error('Fetch team by id error:', err);
+        console.error('Fetch team error:', err);
         res.status(500).json({ error: 'Server error' });
     }
 });
 
-// Update team fields (partial)
 router.patch('/:id', async (req, res) => {
     try {
-        const team = await teamModel.update(req.params.id, req.body);
-        if (!team) return res.status(404).json({ error: 'Team not found' });
+        const patch = {};
+        ['name', 'season', 'coach', 'logo', 'wins', 'losses', 'playerCount'].forEach((key) => {
+            if (req.body[key] !== undefined) patch[key] = req.body[key];
+        });
+
+        const team = await Team.findByIdAndUpdate(req.params.id, patch, { new: true }).lean();
+        if (!team) {
+            return res.status(404).json({ error: 'Team not found' });
+        }
 
         res.status(200).json({
             message: 'Team updated successfully',
-            data: team
+            team,
         });
     } catch (err) {
-        // handle unique index violation on (name, season)
-        if (err && err.code === 11000) {
-            return res.status(409).json({ error: 'Another team with this name already exists in this season' });
-        }
         console.error('Update team error:', err);
         res.status(500).json({ error: 'Server error' });
     }
 });
 
-// Update team logo ONLY (separate route so it doesn’t shadow the general patch)
-router.patch('/:id/logo', async (req, res) => {
-    try {
-        const { logo } = req.body;
-        if (!logo) return res.status(400).json({ error: 'logo is required' });
-
-        const team = await teamModel.update(req.params.id, { logo });
-        if (!team) return res.status(404).json({ error: 'Team not found' });
-
-        res.status(200).json({
-            message: 'Logo updated successfully',
-            data: team
-        });
-    } catch (err) {
-        console.error('Update logo error:', err);
-        res.status(500).json({ error: 'Server error' });
-    }
-});
-
-// Delete team by ID
 router.delete('/:id', async (req, res) => {
     try {
-        const team = await teamModel.deleteOne(req.params.id);
-        if (!team) return res.status(404).json({ error: 'Team not found' });
+        const team = await Team.findByIdAndDelete(req.params.id);
+        if (!team) {
+            return res.status(404).json({ error: 'Team not found' });
+        }
 
         res.status(200).json({ message: 'Team deleted successfully' });
     } catch (err) {
