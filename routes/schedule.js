@@ -9,7 +9,7 @@ router.post('/', async (req, res) => {
         const { date, time, homeTeam, awayTeam, venue, season } = req.body;
 
         if (!date || !time || !homeTeam || !awayTeam || !venue || !season) {
-            return res.status(400).json({ error: 'Date, time, teams, venue and season are required' });
+            return res.status(400).json({ error: 'Date, time, teams, venue, and season are required' });
         }
         // validating date format
         const gameDate = new Date(date);
