@@ -45,7 +45,7 @@ describe('routes/team.js', () => {
             name: 'Hawks',
             season: '2025',
             coach: 'Alice',
-            logo: undefined,
+            logo: '',
         });
         expect(res.status).toBe(201);
         expect(res.body).toMatchObject({
@@ -60,7 +60,7 @@ describe('routes/team.js', () => {
             .send({ name: '', season: '' });
 
         expect(res.status).toBe(400);
-        expect(res.body).toHaveProperty('error', 'Team name and Season are required');
+        expect(res.body).toHaveProperty('error', 'Team name and season are required');
         expect(teamModel.create).not.toHaveBeenCalled();
     });
 
@@ -70,7 +70,7 @@ describe('routes/team.js', () => {
             .send({ name: 'Hawks', season: '20X5' });
 
         expect(res.status).toBe(400);
-        expect(res.body).toHaveProperty('error', 'Invalid season format');
+        expect(res.body).toHaveProperty('error', 'Invalid season format (use YYYY)');
         expect(teamModel.create).not.toHaveBeenCalled();
     });
 
