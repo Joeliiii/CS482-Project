@@ -46,3 +46,51 @@ TeamSchema.index({ name: 1, season: 1 }, { unique: true });
 const Team = mongoose.models.Team || mongoose.model('Team', TeamSchema);
 
 module.exports = Team;
+
+//creating new teams
+exports.create = async function(teamData) {
+    let team = new teamModel(teamData);
+    await team.save();
+    return team;
+};
+
+// get all teams 
+exports.readAll = async function() {
+    return await teamModel.find({}).sort({ season: -1, name: 1 });
+};
+
+// get one team by ID
+exports.readOne = async function(id) {
+    return await teamModel.findById(id);
+};
+
+// get team by name
+exports.readByName = async function(name) {
+    return await teamModel.findOne({ name: name });
+};
+
+// get teams by season
+exports.readBySeason = async function(season) {
+    return await teamModel.find({ season: season }).sort({ name: 1 });
+};
+
+// update team
+exports.update = async function(id, updateData) {
+    let team = await teamModel.findByIdAndUpdate(
+        id,
+        updateData,
+        { new: true }
+    );
+    return team;
+};
+
+// delete one team
+exports.deleteOne = async function(id) {
+    let team = await teamModel.findByIdAndDelete(id);
+    return team;
+};
+
+// delete all teams (for testing)
+exports.deleteAll = async function() {
+    await teamModel.deleteMany();
+};
