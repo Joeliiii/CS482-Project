@@ -2,17 +2,17 @@ const mongoose = require('mongoose');
 const Match = require('../model/Match');
 
 describe('Match Model', () => {
-    beforeAll(async () => {
-        // Use an in-memory connection (mocked)
-        await mongoose.connect('mongodb://localhost:27017/testdb', {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
-    });
-
-    afterAll(async () => {
-        await mongoose.disconnect();
-    });
+   // beforeAll(async () => {
+   //     // Use an in-memory connection (mocked)
+   //     await mongoose.connect('mongodb://localhost:27017/testdb', {
+   //         useNewUrlParser: true,
+   //         useUnifiedTopology: true,
+   //     });
+   // });
+//
+   // afterAll(async () => {
+   //     await mongoose.disconnect();
+   // });
 
     test('creates a valid Match document', async () => {
         const match = new Match({
