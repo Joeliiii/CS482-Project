@@ -74,6 +74,10 @@ app.use('/api/teams', teamRoutes);
 const scheduleRoutes = require('./routes/schedule');
 app.use('/api/schedule', scheduleRoutes);
 
+//supportMessages Routes
+const supportMessageRoutes = require('./routes/supportMessage');
+app.use('/api/support', supportMessageRoutes);
+
 // --- Admin (protect with admin role) ---
 app.get('/api/admin/users', requireRole('admin'), AdminController.listUsers);
 app.put('/api/admin/users/:userId', requireRole('admin'), AdminController.updateUser);
