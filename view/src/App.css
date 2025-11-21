@@ -40,3 +40,32 @@
 .read-the-docs {
   color: #888;
 }
+
+.chat-box * {
+  font-size: 1.5rem;
+}
+
+.chat-box {
+  background-color: #333;
+  color: #fff;
+  padding: 1rem;
+}
+
+.chat-box form {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+
+.chat-box ul {
+  display: flex;
+  flex-flow: column;
+  justify-content: left;
+  list-style-type: none;
+}
+
+.chat-box input,
+.chat-box button {
+  border-radius: 10px;
+  padding: 10px;
+}

@@ -13,6 +13,7 @@ import AdminDashboard from './pages/admin/AdminDashboard.jsx';
 import UserProfile from './pages/UserProfile';
 import Schedule from './pages/Schedule';
 import Livestreams from './pages/Livestreams';
+import LivestreamPage from './pages/LivestreamPage.jsx';
 import Sponsors from './pages/Sponsors';
 import Contact from './pages/Contact';
 import Tickets from "./pages/tickets";
@@ -57,8 +58,9 @@ export default function App() {
                 <Route path="/profile" element={<RequireLogin user={user}><UserProfile /></RequireLogin>} />
                 <Route path="/schedule" element={<Schedule />} />
                 <Route path="/livestreams" element={<Livestreams />} />
+                <Route path="/livestreams/:slug" element={<LivestreamPage/>}/>
                 <Route path="/sponsors" element={<Sponsors />} />
-                <Route path="/contact" element={<Contact />} />
+                <Route path="/contact" element={<Contact />} />~
                 <Route path="/tickets" element={<Tickets />} />
 
                 {/* Admin route guarded on client */}
