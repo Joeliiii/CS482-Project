@@ -28,25 +28,34 @@ exports.login = async (req, res) => {
 
         // session
         req.session.userId = String(user._id);
+        req.session.username = user.username;
         req.session.isAdmin = isAdmin;
 
-        return res.json({
-            message: 'Logged in.',
-            user: {
-                id: user._id,
-                email: user.email,
-                username: user.username,
-                phone: user.phone,
-                isVerified: user.isVerified,
-                createdAt: user.createdAt
-            },
-            roles,               // <— include roles array
-            isAdmin              // <— include boolean
+        req.session.save(err => {
+            if(err){
+                console.error('Session save error:', err);
+                return res.status(500).json({message: 'Server error saving session'});
+            }
+
+        
+            return res.json({
+                message: 'Logged in.',
+                user: {
+                    id: user._id,
+                    email: user.email,
+                    username: user.username,
+                    phone: user.phone,
+                    isVerified: user.isVerified,
+                    createdAt: user.createdAt
+                },
+                roles,               // <— include roles array
+                isAdmin         // <— include boolean
+            });
         });
-    } catch (err) {
-        console.error('login error:', err);
-        return res.status(500).json({ message: 'Server error.' });
-    }
+        } catch (err) {
+            console.error('login error:', err);
+            return res.status(500).json({ message: 'Server error.' });
+        };
 };
 
 exports.logout = (req, res) => {

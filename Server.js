@@ -1,8 +1,8 @@
 require('dotenv').config();
 
 const dbcon = require('./model/DBConnection');
-//const ExpressApp = require('./App');
-const app = require('./App');
+// const app = require('./App');
+const { app, sessionMiddleware } = require('./App');
 
 
 
@@ -16,51 +16,73 @@ const HOST = process.env.HOSTNAME || 'localhost';
 const http = require('http');
 const WebSocket = require('ws');
 const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
+const wss = new WebSocket.Server({ noServer: true });
+
 
 // WebSocket behavior
 const rooms = new Map();   // Map<slug, Set<WebSocket>>
 
-wss.on('connection', (ws, req) => {
-    //Expect URL like: /chat/slug-name
-    const path = req.url || "";
-    const parts = path.split("/");
-
-    //Last part of path is slug
-    const slug = parts.pop() || "default";
-
-    console.log(`Client connected to room: ${slug}`);
-
-    //Create room if not exists
-    if (!rooms.has(slug)) rooms.set(slug, new Set());
-    rooms.get(slug).add(ws);
-
-    ws.on('message', (raw) => {
-        let message;
-        try {
-            message = JSON.parse(raw.toString());
-        } catch {
-            console.log("Invalid JSON from client");
+server.on('upgrade', (req, socket, head) => {
+    sessionMiddleware(req, {}, () => {
+        if (!req.session.userId) {
+            socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
+            socket.destroy();
             return;
         }
 
-        console.log(`Message in room ${slug}:`, message.message);
+        wss.handleUpgrade(req, socket, head, ws => {
+            wss.emit('connection', ws, req);
+        });
+    });
+});
 
-        //Broadcast only to this room
+wss.on('connection', (ws, req) => {
+    const user = {
+        id: req.session.userId,
+        username: req.session.username || 'Unknown',
+        isAdmin: req.session.isAdmin || false
+    };
+
+    const parts = req.url.split('/');
+    const slug = parts.pop() || 'default';
+
+    console.log(`User ${user.username} connected to room: ${slug}`);
+
+    if (!rooms.has(slug)) rooms.set(slug, new Set());
+    rooms.get(slug).add(ws);
+
+    ws.on('message', raw => {
+        let data;
+
+        try {
+            data = JSON.parse(raw.toString());
+        } catch {
+            ws.send(JSON.stringify({ error: "Invalid JSON format" }));
+            return;
+        }
+
+        if (!data.message || typeof data.message !== 'string') {
+            ws.send(JSON.stringify({ error: "Message must be a string" }));
+            return;
+        }
+
         for (const client of rooms.get(slug)) {
             if (client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify({
-                    slug,
-                    message: message.message,
-                }));
+                client.send(
+                    JSON.stringify({
+                        slug,
+                        user: user.username,
+                        message: data.message
+                    })
+                );
             }
         }
     });
 
     ws.on('close', () => {
-        console.log(`Client disconnected from room: ${slug}`);
-        rooms.get(slug).delete(ws);
-        if (rooms.get(slug).size === 0) rooms.delete(slug); // clean empty rooms
+        rooms.get(slug)?.delete(ws);
+        if (rooms.get(slug)?.size === 0) rooms.delete(slug);
+        console.log(`User ${user.username} disconnected from room: ${slug}`);
     });
 });
 

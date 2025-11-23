@@ -4,7 +4,7 @@ const express = require('express');
 const morgan = require('morgan');
 const session = require('express-session');
 const cors = require('cors');
-const memorystore = require('memorystore')(session);
+const MongoStore = require('connect-mongo');
 
 // --- Controllers ---
 const SignupController = require('./controller/SignupController');
@@ -32,13 +32,16 @@ app.use(cors({
     credentials: true
 }));
 
-app.use(session({
-    secret: 'Pineapple - Guava - Orange',
+
+const sessionMiddleware = session({
+    secret: process.env.SESSION_SECRET || 'fallback-secret',
     cookie: { maxAge: 86400000 },
-    store: new memorystore({ checkPeriod: 86400000 }),
+    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
     resave: false,
-    saveUninitialized: true
-}));
+    saveUninitialized: false
+});
+
+app.use(sessionMiddleware);
 
 // ---------------------------
 // API ROUTES (must be BEFORE SPA fallback)
@@ -115,4 +118,5 @@ app.get(/^\/(?!api).*/, (req, res) => {
     res.sendFile(path.join(reactBuildPath, 'index.html'));
 });
 
-module.exports = app;
+//module.exports = app;
+module.exports = { app, sessionMiddleware };
