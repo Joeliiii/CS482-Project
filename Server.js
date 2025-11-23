@@ -19,22 +19,48 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
 // WebSocket behavior
-wss.on('connection', (ws) => {
-    console.log('Client connected');
+const rooms = new Map();   // Map<slug, Set<WebSocket>>
 
-    ws.on('message', (message) => {
-        console.log('Received:', message.toString());
+wss.on('connection', (ws, req) => {
+    //Expect URL like: /chat/slug-name
+    const path = req.url || "";
+    const parts = path.split("/");
 
-        // Broadcast message to all connected clients
-        wss.clients.forEach((client) => {
+    //Last part of path is slug
+    const slug = parts.pop() || "default";
+
+    console.log(`Client connected to room: ${slug}`);
+
+    //Create room if not exists
+    if (!rooms.has(slug)) rooms.set(slug, new Set());
+    rooms.get(slug).add(ws);
+
+    ws.on('message', (raw) => {
+        let message;
+        try {
+            message = JSON.parse(raw.toString());
+        } catch {
+            console.log("Invalid JSON from client");
+            return;
+        }
+
+        console.log(`Message in room ${slug}:`, message.message);
+
+        //Broadcast only to this room
+        for (const client of rooms.get(slug)) {
             if (client.readyState === WebSocket.OPEN) {
-                client.send(message.toString());
+                client.send(JSON.stringify({
+                    slug,
+                    message: message.message,
+                }));
             }
-        });
+        }
     });
 
     ws.on('close', () => {
-        console.log('Client disconnected');
+        console.log(`Client disconnected from room: ${slug}`);
+        rooms.get(slug).delete(ws);
+        if (rooms.get(slug).size === 0) rooms.delete(slug); // clean empty rooms
     });
 });
 

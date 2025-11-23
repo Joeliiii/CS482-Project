@@ -14,31 +14,34 @@ export default function LivestreamPage() {
 
   const current = stream || fallbackData;
 
-  // --- WebSocket State ---
+  //WebSocket State
   const [socket, setSocket] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
 
-  // --- Setup WebSocket connection ---
+  //Setup WebSocket connection
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:4000"); // port must match server
-    setSocket(ws);
+  const ws = new WebSocket(`ws://localhost:4000/chat/${slug}`); //unique per livestream
+  setSocket(ws);
 
-    ws.onmessage = (event) => {
-      setMessages((prev) => [...prev, event.data]);
-    };
-
-    return () => ws.close();
-  }, []);
-
-  // --- Send a message ---
-  const sendMessage = (e) => {
-    e.preventDefault();
-    if (input.trim() && socket?.readyState === WebSocket.OPEN) {
-      socket.send(input);
-      setInput("");
+  ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    if (data.slug === slug) {
+      setMessages((prev) => [...prev, data.message]);
     }
   };
+
+  return () => ws.close();
+}, [slug]);  //re-connect if slug changes
+
+  //Send a message
+ const sendMessage = (e) => {
+  e.preventDefault();
+  if (input.trim() && socket?.readyState === WebSocket.OPEN) {
+    socket.send(JSON.stringify({ slug, message: input }));
+    setInput("");
+  }
+};
 
   return (
     <section className="text-center">
@@ -60,7 +63,7 @@ export default function LivestreamPage() {
 
       <p>Enjoy the livestream or replay for {current.title}!</p>
 
-      {/* ---- Chat UI ---- */}
+      {/*Chat UI*/}
       <div className="mt-4 mx-auto" style={{ maxWidth: "500px", textAlign: "left" }}>
         <form onSubmit={sendMessage} className="d-flex gap-2 mb-3">
           <input
