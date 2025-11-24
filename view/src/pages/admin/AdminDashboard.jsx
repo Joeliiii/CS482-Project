@@ -11,10 +11,20 @@ export default function AdminDashboard() {
     const [teamForm, setTeamForm] = useState({ name: "", season: "", coach: "" });
     const [eventForm, setEventForm] = useState({ title: "", start: "", end: "" });
 
+    // ----- Matches state -----
+    const [matches, setMatches] = useState([]);
+    const [matchFilterEventId, setMatchFilterEventId] = useState("");
+    const [matchForm, setMatchForm] = useState({
+        eventId: "",
+        teamA: "",
+        teamB: "",
+        start: "",
+        court: "",
+    });
+
     const getId = (u) => u.id || u._id;
 
     // ---------- LOADERS ----------
-
     async function loadUsers() {
         try {
             const res = await fetch("/api/admin/users", { credentials: "include" });
@@ -62,7 +72,6 @@ export default function AdminDashboard() {
             });
             if (!res.ok) throw new Error("Failed to load children");
             const json = await res.json();
-            // listChildren returns an array
             setChildren(Array.isArray(json) ? json : []);
         } catch (e) {
             console.error(e);
@@ -71,7 +80,6 @@ export default function AdminDashboard() {
     }
 
     // ---------- USER ROLES ----------
-
     async function setUserRoles(userId, roles) {
         await fetch(`/api/admin/users/${userId}/roles`, {
             method: "PUT",
@@ -97,7 +105,6 @@ export default function AdminDashboard() {
     }
 
     // ---------- USER DELETE ----------
-
     async function deleteUser(userId) {
         if (!window.confirm("Delete this user and related links?")) return;
         await fetch(`/api/admin/users/${userId}`, {
@@ -112,8 +119,7 @@ export default function AdminDashboard() {
     }
 
     // ---------- CHILD → TEAM ASSIGN ----------
-    // NOTE: This assumes you have a backend route:
-    // PUT /api/admin/children/:childId/team  -> { teamId }
+    // Requires backend: PUT /api/admin/children/:childId/team -> { teamId }
     async function assignChildToTeam(childId, teamId) {
         if (!teamId) return;
         try {
@@ -131,7 +137,6 @@ export default function AdminDashboard() {
     }
 
     // ---------- TEAMS CRUD ----------
-
     async function createTeam(e) {
         e.preventDefault();
         setError("");
@@ -155,7 +160,6 @@ export default function AdminDashboard() {
     }
 
     // ---------- EVENTS CRUD ----------
-
     async function createEvent(e) {
         e.preventDefault();
         setError("");
@@ -178,21 +182,108 @@ export default function AdminDashboard() {
         }
     }
 
+    // ---------- MATCHES (list/create/edit/delete) ----------
+    async function loadMatches() {
+        try {
+            const q = matchFilterEventId ? `?eventId=${matchFilterEventId}` : "";
+            const res = await fetch(`/api/admin/matches${q}`, { credentials: "include" });
+            if (!res.ok) throw new Error("Failed to load matches");
+            const json = await res.json();
+            setMatches(Array.isArray(json) ? json : []);
+        } catch (e) {
+            console.error(e);
+            setError("Failed to load matches");
+        }
+    }
+
+    function updateMatchLocal(id, patch) {
+        setMatches((ms) => ms.map((m) => (m._id === id ? { ...m, ...patch } : m)));
+    }
+
+    async function saveMatchRow(m) {
+        try {
+            const res = await fetch(`/api/admin/matches/${m._id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({
+                    scoreA: m.scoreA ?? 0,
+                    scoreB: m.scoreB ?? 0,
+                    status: m.status ?? "scheduled",
+                    start: m.start,
+                    court: m.court ?? "",
+                }),
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.message || "Failed to save match");
+            }
+            const saved = await res.json();
+            updateMatchLocal(m._id, saved);
+        } catch (e) {
+            console.error(e);
+            setError(e.message);
+        }
+    }
+
+    async function deleteMatchRow(id) {
+        if (!window.confirm("Delete this match?")) return;
+        try {
+            const res = await fetch(`/api/admin/matches/${id}`, {
+                method: "DELETE",
+                credentials: "include",
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.message || "Delete failed");
+            }
+            setMatches((ms) => ms.filter((x) => x._id !== id));
+        } catch (e) {
+            console.error(e);
+            setError(e.message);
+        }
+    }
+
+    async function createMatch(e) {
+        e.preventDefault();
+        setError("");
+        try {
+            const res = await fetch("/api/admin/matches", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify(matchForm),
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.message || "Failed to create match");
+            }
+            setMatchForm({ eventId: "", teamA: "", teamB: "", start: "", court: "" });
+            await loadMatches();
+        } catch (e) {
+            console.error(e);
+            setError(e.message);
+        }
+    }
+
+    // ---------- EFFECTS ----------
     useEffect(() => {
         loadUsers();
         loadTeams();
         loadEvents();
+        loadMatches();
     }, []);
+
+    useEffect(() => {
+        loadMatches();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [matchFilterEventId]);
 
     return (
         <div className="text-light">
             <h2 className="fw-bold text-ybt mb-4">Admin Dashboard</h2>
 
-            {error && (
-                <div className="alert alert-danger py-2">
-                    {error}
-                </div>
-            )}
+            {error && <div className="alert alert-danger py-2">{error}</div>}
 
             {/* USERS TABLE */}
             <h4 className="mt-3">Users</h4>
@@ -214,9 +305,7 @@ export default function AdminDashboard() {
                             <td>{u.email}</td>
                             <td>{u.username || "-"}</td>
                             <td>
-                                {(u.roles || []).length
-                                    ? u.roles.join(", ")
-                                    : "none"}
+                                {(u.roles || []).length ? u.roles.join(", ") : "none"}
                                 <div className="mt-1 d-flex gap-1 flex-wrap">
                                     <button
                                         type="button"
@@ -264,6 +353,13 @@ export default function AdminDashboard() {
                         </tr>
                     );
                 })}
+                {!users.length && (
+                    <tr>
+                        <td colSpan="5" className="text-center text-secondary">
+                            No users.
+                        </td>
+                    </tr>
+                )}
                 </tbody>
             </table>
 
@@ -272,9 +368,7 @@ export default function AdminDashboard() {
                 <>
                     <h4 className="mt-4">Children for selected user</h4>
                     {children.length === 0 && (
-                        <div className="text-muted small">
-                            No children found for this user.
-                        </div>
+                        <div className="text-muted small">No children found for this user.</div>
                     )}
 
                     {children.map((child) => {
@@ -287,10 +381,10 @@ export default function AdminDashboard() {
 
                         return (
                             <div key={childId} className="mb-2">
-                                <span className="me-2">
-                                    {label}
-                                    {child.relation && ` (${child.relation})`}
-                                </span>
+                <span className="me-2">
+                  {label}
+                    {child.relation && ` (${child.relation})`}
+                </span>
                                 <select
                                     className="form-select d-inline-block w-auto"
                                     defaultValue=""
@@ -323,9 +417,7 @@ export default function AdminDashboard() {
                             className="form-control"
                             placeholder={field}
                             value={teamForm[field]}
-                            onChange={(e) =>
-                                setTeamForm({ ...teamForm, [field]: e.target.value })
-                            }
+                            onChange={(e) => setTeamForm({ ...teamForm, [field]: e.target.value })}
                             required={field !== "coach"}
                         />
                     </div>
@@ -345,9 +437,7 @@ export default function AdminDashboard() {
                         className="form-control"
                         placeholder="title"
                         value={eventForm.title}
-                        onChange={(e) =>
-                            setEventForm({ ...eventForm, title: e.target.value })
-                        }
+                        onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })}
                         required
                     />
                 </div>
@@ -356,9 +446,7 @@ export default function AdminDashboard() {
                         type="datetime-local"
                         className="form-control"
                         value={eventForm.start}
-                        onChange={(e) =>
-                            setEventForm({ ...eventForm, start: e.target.value })
-                        }
+                        onChange={(e) => setEventForm({ ...eventForm, start: e.target.value })}
                         required
                     />
                 </div>
@@ -367,9 +455,7 @@ export default function AdminDashboard() {
                         type="datetime-local"
                         className="form-control"
                         value={eventForm.end}
-                        onChange={(e) =>
-                            setEventForm({ ...eventForm, end: e.target.value })
-                        }
+                        onChange={(e) => setEventForm({ ...eventForm, end: e.target.value })}
                         required
                     />
                 </div>
@@ -378,7 +464,7 @@ export default function AdminDashboard() {
                 </div>
             </form>
 
-            {/* LIST EVENTS*/}
+            {/* LIST EVENTS */}
             {events.length > 0 && (
                 <>
                     <h5>Upcoming Events</h5>
@@ -392,6 +478,200 @@ export default function AdminDashboard() {
                     </ul>
                 </>
             )}
+
+            <hr className="my-4" />
+
+            {/* CREATE MATCH */}
+            <h4>Create Match</h4>
+            <form onSubmit={createMatch} className="row g-2 mb-4">
+                <div className="col-md-3">
+                    <label className="form-label">Event</label>
+                    <select
+                        className="form-select"
+                        value={matchForm.eventId}
+                        onChange={(e) => setMatchForm({ ...matchForm, eventId: e.target.value })}
+                        required
+                    >
+                        <option value="">Select event</option>
+                        {events.map((ev) => (
+                            <option key={ev._id} value={ev._id}>
+                                {ev.title} — {new Date(ev.start).toLocaleDateString()}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="col-md-2">
+                    <label className="form-label">Team A</label>
+                    <select
+                        className="form-select"
+                        value={matchForm.teamA}
+                        onChange={(e) => setMatchForm({ ...matchForm, teamA: e.target.value })}
+                        required
+                    >
+                        <option value="">Select</option>
+                        {teams.map((t) => (
+                            <option key={t._id} value={t.name}>
+                                {t.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="col-md-2">
+                    <label className="form-label">Team B</label>
+                    <select
+                        className="form-select"
+                        value={matchForm.teamB}
+                        onChange={(e) => setMatchForm({ ...matchForm, teamB: e.target.value })}
+                        required
+                    >
+                        <option value="">Select</option>
+                        {teams.map((t) => (
+                            <option key={t._id} value={t.name}>
+                                {t.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="col-md-3">
+                    <label className="form-label">Start</label>
+                    <input
+                        type="datetime-local"
+                        className="form-control"
+                        value={matchForm.start}
+                        onChange={(e) => setMatchForm({ ...matchForm, start: e.target.value })}
+                        required
+                    />
+                </div>
+
+                <div className="col-md-2">
+                    <label className="form-label">Court</label>
+                    <input
+                        className="form-control"
+                        placeholder="Court"
+                        value={matchForm.court}
+                        onChange={(e) => setMatchForm({ ...matchForm, court: e.target.value })}
+                    />
+                </div>
+
+                <div className="col-12 mt-2">
+                    <button className="btn bg-ybt">Create Match</button>
+                </div>
+            </form>
+
+            {/* MATCHES TABLE */}
+            <h4>Matches</h4>
+
+            <div className="row g-2 align-items-end mb-3">
+                <div className="col-md-4">
+                    <label className="form-label">Filter by Event</label>
+                    <select
+                        className="form-select"
+                        value={matchFilterEventId}
+                        onChange={(e) => setMatchFilterEventId(e.target.value)}
+                    >
+                        <option value="">All events</option>
+                        {events.map((ev) => (
+                            <option key={ev._id} value={ev._id}>
+                                {ev.title} — {new Date(ev.start).toLocaleDateString()}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="col-md-2">
+                    <button className="btn btn-outline-secondary w-100" onClick={loadMatches}>
+                        Refresh
+                    </button>
+                </div>
+            </div>
+
+            <table className="table table-dark table-striped align-middle">
+                <thead>
+                <tr>
+                    <th>Event</th>
+                    <th>Start</th>
+                    <th>Teams</th>
+                    <th>Score A</th>
+                    <th>Score B</th>
+                    <th>Status</th>
+                    <th>Court</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {matches.map((m) => {
+                    const ev = events.find((e) => (e._id === m.eventId));
+                    const eventTitle = ev?.title || "—";
+                    return (
+                        <tr key={m._id}>
+                            <td>{eventTitle}</td>
+                            <td>{new Date(m.start).toLocaleString()}</td>
+                            <td>{m.teamA} vs {m.teamB}</td>
+
+                            <td style={{ maxWidth: 90 }}>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    className="form-control form-control-sm"
+                                    value={m.scoreA ?? 0}
+                                    onChange={(e) => updateMatchLocal(m._id, { scoreA: Number(e.target.value) })}
+                                />
+                            </td>
+
+                            <td style={{ maxWidth: 90 }}>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    className="form-control form-control-sm"
+                                    value={m.scoreB ?? 0}
+                                    onChange={(e) => updateMatchLocal(m._id, { scoreB: Number(e.target.value) })}
+                                />
+                            </td>
+
+                            <td style={{ maxWidth: 170 }}>
+                                <select
+                                    className="form-select form-select-sm"
+                                    value={m.status || "scheduled"}
+                                    onChange={(e) => updateMatchLocal(m._id, { status: e.target.value })}
+                                >
+                                    <option value="scheduled">Scheduled</option>
+                                    <option value="in_progress">In Progress</option>
+                                    <option value="final">Final</option>
+                                </select>
+                            </td>
+
+                            <td style={{ maxWidth: 140 }}>
+                                <input
+                                    type="text"
+                                    className="form-control form-control-sm"
+                                    value={m.court || ""}
+                                    onChange={(e) => updateMatchLocal(m._id, { court: e.target.value })}
+                                    placeholder="Court"
+                                />
+                            </td>
+
+                            <td className="d-flex gap-2">
+                                <button className="btn btn-sm btn-success" onClick={() => saveMatchRow(m)}>
+                                    Save
+                                </button>
+                                <button className="btn btn-sm btn-danger" onClick={() => deleteMatchRow(m._id)}>
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    );
+                })}
+                {!matches.length && (
+                    <tr>
+                        <td colSpan="8" className="text-center text-secondary">
+                            No matches yet.
+                        </td>
+                    </tr>
+                )}
+                </tbody>
+            </table>
         </div>
     );
 }
