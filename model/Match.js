@@ -7,9 +7,13 @@ const matchSchema = new mongoose.Schema({
     teamB:    { type: String, required: true, trim: true },
     scoreA:   { type: Number, default: 0, min: 0 },
     scoreB:   { type: Number, default: 0, min: 0 },
-    status:   { type: String, enum: ['scheduled','in_progress','final'], default: 'scheduled' },
-    start:    { type: Date, required: true },
-    court:    { type: String, default: '', trim: true }
+    status:   { type: String, enum: ['scheduled','in_progress','final'], default: 'scheduled', index: true },
+    start:    { type: Date, required: true, index: true },
+    court:    { type: String, default: '', trim: true },
+
+    // NEW: support media + bracket structure
+    videos:   { type: [String], default: [] },       // e.g., YouTube/Vimeo links or S3 URLs
+    round:    { type: Number, default: 1, index: true }, // 1 = Quarterfinals, etc. Optional but useful
 }, { timestamps: true });
 
 module.exports = mongoose.models.Match || mongoose.model('Match', matchSchema);

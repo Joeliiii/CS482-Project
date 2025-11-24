@@ -17,6 +17,7 @@ import LivestreamPage from './pages/LivestreamPage.jsx';
 import Sponsors from './pages/Sponsors';
 import Contact from './pages/Contact';
 import Tickets from "./pages/tickets";
+import MatchHistory from './pages/MatchHistory';
 
 export default function App() {
     const [user, setUser] = React.useState(null);
@@ -62,6 +63,7 @@ export default function App() {
                 <Route path="/sponsors" element={<Sponsors />} />
                 <Route path="/contact" element={<Contact />} />~
                 <Route path="/tickets" element={<Tickets />} />
+                <Route path="/history" element={<MatchHistory />} />
 
                 {/* Admin route guarded on client */}
                 <Route

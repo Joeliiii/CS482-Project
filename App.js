@@ -13,6 +13,11 @@ const UserController = require('./controller/UserController');
 const RoleController = require('./controller/RoleController');
 const ChildrenController = require('./controller/ChildrenController');
 const AdminController = require('./controller/AdminController');
+const MatchController = require('./controller/MatchController');
+const BracketController = require('./controller/BracketController');
+let Event; try { Event = require('./model/Event'); } catch (_) {}
+const publicEvents = require('./routes/publicEvents');
+const publicMatches = require('./routes/publicMatches');
 
 // --- Middleware ---
 const { ensureLoggedIn } = require('./middleware/auth');
@@ -46,7 +51,8 @@ app.use(sessionMiddleware);
 // ---------------------------
 // API ROUTES (must be BEFORE SPA fallback)
 // ---------------------------
-
+app.use('/api/events', publicEvents);
+app.use('/api/matches', publicMatches);
 // Auth
 app.post('/api/auth/signup', SignupController.signup);
 app.post('/api/auth/login',  LoginController.login);
@@ -107,6 +113,30 @@ app.get('/api/admin/events', requireRole('admin'), AdminController.listEvents);
 app.post('/api/admin/events', requireRole('admin'), AdminController.createEvent);
 app.put('/api/admin/events/:eventId', requireRole('admin'), AdminController.updateEvent);
 app.delete('/api/admin/events/:eventId', requireRole('admin'), AdminController.deleteEvent);
+
+
+// Brackets
+app.get('/api/bracket/event/:eventId', BracketController.byEvent);
+
+if (Event) {
+    app.get('/api/events', async (req, res) => {
+        try {
+            const items = await Event.find({}).sort({ start: 1 }).lean();
+            res.json(items);
+        } catch (e) {
+            console.error('events list error:', e);
+            res.status(500).json({ message: 'Server error.' });
+        }
+    });
+}
+
+//Matches
+// Admin: matches
+app.get('/api/admin/matches', requireRole('admin'), MatchController.list);
+app.post('/api/admin/matches', requireRole('admin'), MatchController.create);
+app.put('/api/admin/matches/:matchId', requireRole('admin'), MatchController.update);
+app.delete('/api/admin/matches/:matchId', requireRole('admin'), MatchController.remove);
+
 // ---------------------------
 // Static + SPA fallback
 // ---------------------------
