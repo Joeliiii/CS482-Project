@@ -23,31 +23,18 @@ const wss = new WebSocket.Server({ noServer: true });
 const rooms = new Map();   // Map<slug, Set<WebSocket>>
 
 server.on('upgrade', (req, socket, head) => {
-    sessionMiddleware(req, {}, () => {
-        if (!req.session.userId) {
-            socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
-            socket.destroy();
-            return;
-        }
-
-        wss.handleUpgrade(req, socket, head, ws => {
-            wss.emit('connection', ws, req);
-        });
+    // Allow WebSocket connections without auth for now
+    wss.handleUpgrade(req, socket, head, ws => {
+        wss.emit('connection', ws, req);
     });
 });
 
 wss.on('connection', (ws, req) => {
-    const user = {
-        id: req.session.userId,
-        username: req.session.username || 'Unknown',
-        isAdmin: req.session.isAdmin || false
-    };
 
     const parts = req.url.split('/');
     const slug = parts.pop() || 'default';
 
-    console.log(`User ${user.username} connected to room: ${slug}`);
-
+    console.log(`User connected to room: ${slug}`);
     if (!rooms.has(slug)) rooms.set(slug, new Set());
     rooms.get(slug).add(ws);
 
@@ -66,12 +53,18 @@ wss.on('connection', (ws, req) => {
             return;
         }
 
+        if (!data.username) {
+            data.username = 'Anonymous';
+        }
+
+        console.log(`[${slug}] ${data.username}: ${data.message}`);
+
         for (const client of rooms.get(slug)) {
             if (client.readyState === WebSocket.OPEN) {
                 client.send(
                     JSON.stringify({
-                        slug,
-                        user: user.username,
+                        slug: data.slug,
+                        username: data.username,
                         message: data.message
                     })
                 );
@@ -82,7 +75,11 @@ wss.on('connection', (ws, req) => {
     ws.on('close', () => {
         rooms.get(slug)?.delete(ws);
         if (rooms.get(slug)?.size === 0) rooms.delete(slug);
-        console.log(`User ${user.username} disconnected from room: ${slug}`);
+        console.log(`User disconnected from room: ${slug}`);
+    });
+
+    ws.on('error', (error) => {
+        console.error('WebSocket error:', error);
     });
 });
 
