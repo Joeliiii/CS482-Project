@@ -4,15 +4,14 @@ import { useEffect, useState } from "react";
 export default function LivestreamPage() {
   const { slug } = useParams();
   const location = useLocation();
-  const stream = location.state?.stream;
+  const match = location.state?.match;
 
-  const fallbackData = {
-    title: `Livestream: ${slug.replace(/([A-Z])/g, " $1")}`,
-    videoId: "dQw4w9WgXcQ",
-    live: false,
-  };
+  const videoId = match?.videoId || match?.streamUrl || "dQw4w9WgXcQ";
+  const title = match 
+    ? `${match.teamA?.name || 'Team A'} vs ${match.teamB?.name || 'Team B'}`
+    : `Livestream: ${slug}`;
+  const isLive = match?.isLive || false;
 
-  const current = stream || fallbackData;
 
   //WebSocket State
   const [socket, setSocket] = useState(null);
