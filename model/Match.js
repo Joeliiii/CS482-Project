@@ -14,6 +14,10 @@ const matchSchema = new mongoose.Schema({
     // NEW: support media + bracket structure
     videos:   { type: [String], default: [] },       // e.g., YouTube/Vimeo links or S3 URLs
     round:    { type: Number, default: 1, index: true }, // 1 = Quarterfinals, etc. Optional but useful
+
+    videoId:  { type: String, default: '' },         // YouTube video ID for embedding
+    streamType: { type: String, enum: ['youtube', 'twitch', ''], default: 'youtube' },
+    isLive:   { type: Boolean, default: false },     
 }, { timestamps: true });
 
 module.exports = mongoose.models.Match || mongoose.model('Match', matchSchema);
