@@ -34,7 +34,7 @@ export default function LivestreamPage() {
     ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
     if (data.slug === slug) {
-      setMessages((prev) => [...prev, data.message]);
+      setMessages((prev) => [...prev, data]);
     }
     };
     ws.onerror = (error) => {
