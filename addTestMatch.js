@@ -4,33 +4,33 @@ const Match = require('./model/Match');
 
 async function addTestMatch() {
     try {
-        // Connect to MongoDB
         await mongoose.connect(process.env.MONGO_URI);
         console.log('Connected to MongoDB');
 
-        // Create test match
-        const testMatch = await Match.create({
-            eventId: new mongoose.Types.ObjectId(), 
-            teamA: 'Cavaliers',
-            teamB: 'Warriors',
-            scoreA: 93,
-            scoreB: 89,
-            status: 'final',
-            start: new Date('2016-06-19'),
-            court: 'Oracle Arena',
-            videoId: 'EoVTttvKfRs',
-            streamType: 'youtube',
-            isLive: false,
-            round: 7
-        });
-
-        console.log('Test match created successfully!');
-        console.log(testMatch);
+        const existingMatch = await Match.findOne({});
+        
+        if (existingMatch) {
+            console.log('Found existing match, updating it...');
+            existingMatch.videoId = 'EoVTttvKfRs';
+            existingMatch.streamType = 'youtube';
+            existingMatch.isLive = false;
+            existingMatch.teamA = 'Cavaliers';
+            existingMatch.teamB = 'Warriors';
+            existingMatch.scoreA = 93;
+            existingMatch.scoreB = 89;
+            existingMatch.status = 'final';
+            
+            await existingMatch.save();
+            console.log('Match updated successfully!');
+            console.log(existingMatch);
+        } else {
+            console.log('No matches found in database!');
+        }
 
         await mongoose.connection.close();
         console.log('Done!');
     } catch (error) {
-        console.error('Error creating test match:', error);
+        console.error('Error:', error);
         process.exit(1);
     }
 }
