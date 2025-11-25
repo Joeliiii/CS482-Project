@@ -132,24 +132,28 @@ const renderEmbed = () => {
                   <input
                     type="text"
                     placeholder="Enter your username"
-                    className="form-control mb-2"
+                    className="form-control mb-2 bg-dark text-light"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required
                   />
-                  <button className="btn bg-ybt w-100">Set Username</button>
+                  <button type="submit" className="btn bg-ybt w-100">Set Username</button>
                 </form>
               ) : (
+                <>
+                <div className="text-secondary small mb-2">Chatting as: <strong className="text-ybt">{username}</strong></div>
                 <form onSubmit={sendMessage} className="d-flex gap-2">
                   <input
                     type="text"
                     placeholder="Type a message..."
-                    className="form-control"
+                    className="form-control bg-dark text-light border-secondary"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
+                    required
                   />
                   <button type="submit" className="btn bg-ybt">Send</button>
                 </form>
+                </>
               )}
             </div>
           </div>
