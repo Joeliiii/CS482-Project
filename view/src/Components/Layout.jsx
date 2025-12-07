@@ -74,6 +74,7 @@ export default function Layout({ user, children }) {
                     <div>© {new Date().getFullYear()} YBT League</div>
                     <nav className="d-flex gap-3">
                         <NavLink className="link-hover link-light text-decoration-none" to="/contact">Contact</NavLink>
+                        <NavLink className="link-hover link-light text-decoration-none" to="/support">Support</NavLink>
                         <NavLink className="link-hover link-light text-decoration-none" to="/">Home</NavLink>
                         <NavLink className="link-hover link-light text-decoration-none" to="/profile">Profile</NavLink>
                     </nav>
