@@ -63,7 +63,6 @@ export default function App() {
                 <Route path="/livestreams/:slug" element={<LivestreamPage/>}/>
                 <Route path="/sponsors" element={<Sponsors />} />
                 <Route path="/contact" element={<Contact />} />
-                <Route path="/support" element={<Support />} />
                 <Route path="/tickets" element={<Tickets />} />
                 <Route path="/history" element={<MatchHistory />} />
 
