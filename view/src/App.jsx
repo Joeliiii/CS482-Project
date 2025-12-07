@@ -18,7 +18,6 @@ import Sponsors from './pages/Sponsors';
 import Contact from './pages/Contact';
 import Tickets from "./pages/tickets";
 import MatchHistory from './pages/MatchHistory';
-import Support from './pages/Support';
 
 export default function App() {
     const [user, setUser] = React.useState(null);
