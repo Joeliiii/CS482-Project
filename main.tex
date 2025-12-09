@@ -1,0 +1,660 @@
+\documentclass{article}
+
+%%%%% packages to import %%%%%%
+\usepackage{graphicx} % Required for inserting images
+\usepackage[useregional]{datetime2}
+\usepackage[margin=1in]{geometry}
+\usepackage{float}
+
+%%%%% title information %%%%%%
+\title{CS482 Software Project Proposal: \\ 
+YBT Sports League}
+\author{Joel Robinson, Ekvtime Itchirauli, Yohann Gouin, Nishant Gurung}
+\date{\today}
+
+\begin{document}
+\maketitle % make title information appear here
+
+\section{Client Information}
+By sharing this client information and the rest of this document, you are stating that this client has provided this project as something they want (not something you created and asked if they wanted), and that they are interested in having you complete this project for your capstone.
+% Complete the list items about your client
+\begin{itemize}
+    \item Client name: Dr. Nguyen Ho
+    \item Client title: Assistant Professor
+    \item Client email address: tnho@loyola.edu
+    \item Client employer: 
+    \item How you know the client:
+\end{itemize}
+
+\section{Project Description}
+% You must complete the following 4 subsections. The instructor will use this information to determine if your project might be feasible or not.
+
+% Comment out the bracketed instructions as you finish subsections
+\subsection{Overview}
+[Add a few paragraphs describing your project succinctly. What problem are you trying to solve, what is the purpose of your project? Why does your client want this project?]
+
+Our client wants to build an interactive website that'll help her and the organization in planning and schedule tournaments while providing an online experience that'll allow fans to engage with the community and watch their favorite teams.
+
+\subsection{Key Features}
+[At this point you should have a basic understanding of your client's needs. List out the key features of the software system the client wants you to build.]
+\begin{itemize}
+    \item Support 6-month seasons.
+    \item Organize basketball tournaments targeting kids underage.
+    \item Up to 50 teams (5–10 players each).
+    \item One team manager maximum per team.
+    \item Randomized, continuously updated brackets for seasons.
+    \item Nationwide events with location, time, and date scheduling.
+    \item Ability to buy tickets for games online.
+    \item Create/manage teams.
+    \item Sign up self and children.
+    \item View/post photos (only visible to registered users).
+    \item Livestreaming of games (live and archived).
+    \item Comments, likes, dislikes on matches and posts.
+    \item Display of game schedules.
+    \item Bracket generation and continuous updates.
+    \item Promote kids/teen sports through the platform.
+\end{itemize}
+
+\subsection{Why this Project is Interesting}
+Building a modern, fully integrated tournament management system allows us to solve a real community problem while applying a wide range of computer science skills—from full-stack development and database design to role-based security, distributed systems, and UI/UX. People should care about this project because it supports youth involvement in sports, improves organizational fairness and transparency, and provides a professional, reliable platform for small leagues that typically do not have access to such advanced tools
+
+\subsection{Areas of CS required}
+Combines a React front end with an Express/Node.js backend to deliver a dynamic, role-driven tournament platform. Database systems play a central role through complex MongoDB schema design, indexing, aggregation pipelines, and secure credential storage. The architecture also incorporates distributed systems concepts, with a cloud-hosted MongoDB Atlas instance, cross-origin communication, and asynchronous client–server interactions. Strong software engineering practices appear throughout the project, including modular controllers, middleware pipelines, unit testing with Jest, and support for maintainability and scalability. Additional subfields such as computer security (session management, bcrypt hashing, RBAC), algorithms and data structures (bracket organization, event/match filtering, efficient lookups), and human–computer interaction.
+
+\subsection{Potential Concerns and Questions}
+[Is there any aspect of this project that makes you unsure if it will work, either due to your own interests/background, or that you aren't sure if it fits the requirements? Are there questions you have about this project that you want instructor feedback about?]
+
+
+\section{Requirements}
+
+\subsection{Non-Functional Requirements}
+[Non-functional requirements are just as important as functional requirements. Dont forget to specify them.]
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c l c p{9cm}}
+\hline
+\textbf{ID} & \textbf{NFR Title} & \textbf{Category} & \textbf{Description} \\
+\hline
+NFR1 & Salting & Performance & Passwords shall be stored using strong one-way hashing (bcrypt) with a minimum of 10 salt rounds. \\ \hline
+NFR2 & Authentication & Security & All authenticated sessions shall be securely stored via express-session using encrypted cookies and/or a MongoDB-backed session store. \\ \hline
+NFR3 & Connection & Security & All authenticated sessions shall be securely stored via express-session using encrypted cookies and/or a MongoDB-backed session store. \\ \hline
+NFR4 & RBAC Model & Security & The system shall enforce role-based access control (RBAC), ensuring Admin-only pages and endpoints (e.g. /api/admin/...) are protected by middleware. \\ \hline
+NFR5 & System Availability & Reliability & System shall target 99.5 percent availability during tournament seasons. \\ \hline
+NFR6 & MongoDB & Reliability & MongoDB write operations shall maintain data consistency using transactional updates where applicable (e.g., multi-document writes for children + links). \\ \hline
+NFR7 & Query Fields & Performance & Frequently queried MongoDB fields (e.g., eventId, teamA, teamB, status) shall be indexed to ensure efficient query execution. \\ \hline
+NFR8 & Consistent Design & Usability & The UI shall maintain a consistent design using the established YBT color palette (black, red, yellow) and Bootstrap components \\ \hline
+NFR9 & Modular Architecture & Maintainability & The system shall follow a modular architecture separating controllers, models, routes, and middleware to support long-term maintainability. \\ \hline
+NFR10 & Statement Coverage & Maintainability & The project shall maintain greater than 70 percent statement coverage using Jest for backend logic (controllers, middleware, DB helpers). \\ \hline
+NFR11 & Feedback & Usability & Users shall receive clear visual feedback on successful or failed actions (e.g., form submissions, errors, login attempts). \\ \hline
+NFR12 & System Logs & Observability & System logs shall capture all authentication events, match creation, role updates, and errors with timestamps. \\ \hline
+NFR13 & Data Backup & Observability & MongoDB shall be backed up daily during active tournament seasons. \\ \hline
+
+\end{tabular}
+\caption{Non-Functional requirements}
+\end{table}
+
+
+\subsection{Functional Requirements (User Stories)}
+\begin{table}[H]
+\centering
+\begin{tabular}{ c l c p{10cm}}
+\hline
+\textbf{ID} & \textbf{Story Title} & \textbf{Points} & \textbf{Description} \\
+\hline
+S0 & Scheduling & 8 & As a/an Admin, I want to maintain a seasonal event schedule, so that I can schedule competitions for teams. \\ \hline
+S1 & Signing Up Children & 2 & As a/an Adult, I want to register my children on the website, so that they can be assigned a team for basketball \\ \hline
+S2 & Team Manager Volunteer & 2 & As a/an Adult, I want to volunteer as a team manager, so that I can assist coaching teams. \\ \hline
+S3 & Match Bracket & 2 & As a/an Admin, I want a randomized match bracket , so that teams can compete in an organized manner \\ \hline
+S4 & History of Matches & 3 & As a/an User, I want match history and videos, so that I can watch old matches at a later date. \\ \hline
+S5 & Match Updates & 5 & As a/an Admin, I want the ability to create match updates, so that I can relay cancellations, delays, and other issues about a match. \\ \hline
+S6 & Sponsor & 1 & As a/an Sponsor, I want the ability to reach out to the organization, so that I can potentially sponsor the events/organization. \\ \hline
+S7 & User Posts & 2 & As a/an User, I want the ability to post pictures and comments, so that I can add posts and talk about the games taking/having taken place. \\ \hline
+S9 & Team Photos and Logos & 2 & As a/an User, I want be able to see team logos and match photos, so that I can distinguish different teams and observe their match photos \\ \hline
+S10 & Live Stream & 8 & As a/an Admin, I want stream live matches, so that the viewers can follow the games from wherever they may be. \\ \hline
+S11 & Live Chat & 5 & As a/an User, I want a live chat box , so that the viewers can talk to each other. \\ \hline
+S12 & Archive Folder & 2 & As a/an Admin, I want an archive folder, so that I can save the live streams and images \\ \hline
+S13 & Buying Tickets & 2 & As a/an User, I want to buy tickets online securely, so that I don't waste time when I reach the venue \\ \hline
+S14 & Contact Page & 2 & As a/an Admin, I want a contact page or section for users , so that they can reach out to us or the sponsors  \\ \hline
+S16 & Guest Viewing Livestreams & 1 & As a/an Guest, I want to have the option to view a livestream, so that making an account is will not be necessary \\ \hline
+S17 & Display Match Info & 1 & As a/an User, I want to see where and when the match is being held, so that I can know what time to watch or potentially attend the game in person \\ \hline
+S19 & Sponsor Info & 2 & As a/an Sponsor, I want to display my info as a sponsor, so that I can properly advertise and support the league/team \\ \hline
+S20 & Admin Support Messages & 3 & As a/an Admin, I want to read and change statuses on messages, so that I can properly prioritize and mark off support tickets. \\ \hline
+S21 & Registration & 2 & As a/an User, I want to register as different user types, so that I can be identified as a child/adult/sponsor \\ \hline
+S22 & Admin CRUD & 8 & As a/an Admin, I want to add users, edit their info, and delete users., so that I can have access to editing from the website. \\ \hline
+\end{tabular}
+\caption{Functional requirements as User Stories.}
+\end{table}
+
+\section{System Design}
+
+\subsection{Architecture}
+Our team is following a \textbf{Layered (n-tier) Architecture} combined with elements of the \textbf{Model-View-Controller (MVC)} pattern to maintain a clean separation of concerns, improve scalability, and support future feature expansion. The system is composed of the following main modules:
+
+ 
+
+\begin{enumerate}
+
+    \item \textbf{Presentation Layer (Frontend / Client-Side)}\\
+
+    Provides the main user interface for players, coaches, parents, and administrators.
+
+    Developed as a responsive web application using \textit{JavaScript}.
+
+    Handles user interaction, navigation, and data visualization (e.g., brackets, live scores, and media galleries).
+
+    Communicates with backend services via \textit{RESTful APIs} or \textit{GraphQL} endpoints.
+
+ 
+
+    \item \textbf{Application Layer (Backend / Server-Side Logic)}\\
+
+    Built using \textit{Node.js with Express}.
+
+    Implements all core business logic such as user authentication, bracket generation and updates, live event scheduling, and content management.
+
+    Coordinates data flow between the frontend, database, and external services.
+
+    Manages roles and permissions (e.g., admin, coach, player, viewer).
+
+ 
+
+    \item \textbf{Media and Live Streaming Module}\\
+
+    Handles \textit{live video streaming} for games and events using integrated streaming services such as YouTube (idk if we can use this, feel free to change).
+
+    Manages \textit{video and photo archives}, allowing users to view past games, highlights, and team media galleries.
+
+    Integrates with \textit{cloud storage} (or other) for efficient and scalable content hosting.
+
+ 
+
+    \item \textbf{Bracket Management Module}\\
+
+    Provides tools for creating, updating, and displaying tournament brackets in real-time.
+
+    Supports automatic bracket progression based on game results entered by administrators or referees.
+
+    Integrates with the database to ensure live updates and accurate standings.
+
+ 
+
+    \item \textbf{Data Access Layer}\\
+
+    Responsible for database interactions through an ORM such as ...
+
+    Handles all CRUD operations for users, teams, games, brackets, and media assets.
+
+    Ensures data integrity and efficient querying.
+
+ 
+
+    \item \textbf{Database Layer}\\
+
+    Uses a \textit{relational database} (e.g., PostgreSQL or MySQL) to store structured data such as user profiles, team information, game results, and tournament brackets.
+
+    A \textit{cloud storage service} (such as...) is used to store and retrieve large media files.
+
+ 
+
+    \item \textbf{External Integrations}\\
+
+    Integrates with \textit{authentication providers} (e.g., Firebase Auth or OAuth 2.0) for secure login and role-based access.
+
+    May include \textit{email notification}(for event registrations or new logins).
+
+    Optionally connects to \textit{analytics tools} for monitoring website performance and user engagement.
+
+\end{enumerate}
+
+\subsection{Diagrams}
+[CS482, on sprints/iterations 2-3, you need to create and update a diagram (check the assignment for which type of diagram). On CS496, since before sprint/iteration 1 you should have a class diagram and keep it up-to-date.]
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\linewidth]{Score Diagram.png}
+    \caption{Score Diagram}
+    \label{fig:placeholder}
+\end{figure}
+
+\subsection{Technology}
+We plan on building the website using JavaScript as our programming language. For the frontend, we'll use Bootstrap, a CSS framework for responsive UI design. For the backend, we'll use  Node.js as the runtime environment which will allow us to communicate with our MongoDB database and send responses back to the browser. Finally, Jest will be used as our framework for node.js testing.
+
+\subsection{Coding Standards}
+The coding standards we will be following are using singular names for database entities, only allowing code with unit tests and 70\% coverage and above tests. We will also be using snakecase for all method names going forward.
+
+\subsection{Data}
+The Data Structure is given below.
+\subsection{Database Schema}
+
+\begin{itemize}
+
+  \item \textbf{Users}
+  \begin{itemize}
+    \item int id (PK)
+    \item string email
+    \item string password\_hash
+    \item string display\_name
+    \item string phone
+    \item boolean is\_verified
+    \item datetime created\_at
+  \end{itemize}
+
+  \item \textbf{Roles}
+  \begin{itemize}
+    \item int id (PK)
+    \item string name
+  \end{itemize}
+
+  \item \textbf{UserRoles}
+  \begin{itemize}
+    \item int user\_id (FK)
+    \item int role\_id (FK)
+  \end{itemize}
+
+  \item \textbf{Adults}
+  \begin{itemize}
+    \item int id (PK)
+    \item int user\_id (FK)
+    \item string legal\_name
+    \item string address
+    \item string gov\_id\_type
+    \item string gov\_id\_last4
+    \item string photo\_url
+  \end{itemize}
+
+  \item \textbf{Children}
+  \begin{itemize}
+    \item int id (PK)
+    \item string full\_name
+    \item date birthdate
+    \item string photo\_url
+  \end{itemize}
+
+  \item \textbf{AdultChildLinks}
+  \begin{itemize}
+    \item int adult\_id (FK)
+    \item int child\_id (FK)
+    \item string relation
+    \item boolean is\_primary
+    \item int consent\_id (FK)
+  \end{itemize}
+
+  \item \textbf{Consents}
+  \begin{itemize}
+    \item int id (PK)
+    \item int child\_id (FK)
+    \item int consenting\_adult\_id (FK)
+    \item string type
+    \item datetime signed\_at
+    \item string document\_url
+  \end{itemize}
+
+  \item \textbf{Seasons}
+  \begin{itemize}
+    \item int id (PK)
+    \item string name
+    \item date start\_date
+    \item date end\_date
+    \item int max\_teams
+    \item int min\_players
+    \item int max\_players
+  \end{itemize}
+
+  \item \textbf{Teams}
+  \begin{itemize}
+    \item int id (PK)
+    \item int season\_id (FK)
+    \item string name
+    \item string logo\_url
+    \item string color\_primary
+  \end{itemize}
+
+  \item \textbf{TeamManagers}
+  \begin{itemize}
+    \item int team\_id (PK, FK)
+    \item int adult\_id (FK)
+  \end{itemize}
+
+  \item \textbf{RosterMembers}
+  \begin{itemize}
+    \item int team\_id (FK)
+    \item int child\_id (FK)
+    \item int jersey\_number
+  \end{itemize}
+
+  \item \textbf{Venues}
+  \begin{itemize}
+    \item int id (PK)
+    \item string name
+    \item string address
+    \item string city
+    \item string state
+    \item int capacity
+  \end{itemize}
+
+  \item \textbf{Tournaments}
+  \begin{itemize}
+    \item int id (PK)
+    \item int season\_id (FK)
+    \item string name
+    \item string bracket\_style
+    \item boolean seeded
+  \end{itemize}
+
+  \item \textbf{Brackets}
+  \begin{itemize}
+    \item int id (PK)
+    \item int tournament\_id (FK)
+    \item datetime generated\_at
+    \item string status
+  \end{itemize}
+
+  \item \textbf{Matches}
+  \begin{itemize}
+    \item int id (PK)
+    \item int tournament\_id (FK)
+    \item int round\_number
+    \item int bracket\_slot
+    \item int team\_a\_id (FK)
+    \item int team\_b\_id (FK)
+    \item int winner\_team\_id (FK)
+    \item string status
+  \end{itemize}
+
+  \item \textbf{Games}
+  \begin{itemize}
+    \item int id (PK)
+    \item int match\_id (FK)
+    \item int venue\_id (FK)
+    \item datetime starts\_at
+    \item datetime ends\_at
+    \item int home\_team\_id (FK)
+    \item int away\_team\_id (FK)
+    \item int score\_home
+    \item int score\_away
+    \item string status
+  \end{itemize}
+
+  \item \textbf{GameUpdates}
+  \begin{itemize}
+    \item int id (PK)
+    \item int game\_id (FK)
+    \item string type
+    \item string message
+    \item int created\_by (FK)
+    \item datetime created\_at
+  \end{itemize}
+
+  \item \textbf{Videos}
+  \begin{itemize}
+    \item int id (PK)
+    \item int game\_id (FK)
+    \item int uploaded\_by (FK)
+    \item string url
+    \item int duration
+    \item boolean is\_archived
+  \end{itemize}
+
+  \item \textbf{Livestreams}
+  \begin{itemize}
+    \item int id (PK)
+    \item int game\_id (FK)
+    \item string provider
+    \item string stream\_key
+    \item string playback\_url
+    \item string status
+  \end{itemize}
+
+  \item \textbf{Photos}
+  \begin{itemize}
+    \item int id (PK)
+    \item int uploaded\_by (FK)
+    \item int team\_id (FK)
+    \item int game\_id (FK)
+    \item string url
+    \item string visible\_to
+  \end{itemize}
+
+  \item \textbf{Posts}
+  \begin{itemize}
+    \item int id (PK)
+    \item int author\_user\_id (FK)
+    \item string title
+    \item text body
+    \item datetime created\_at
+  \end{itemize}
+
+  \item \textbf{Comments}
+  \begin{itemize}
+    \item int id (PK)
+    \item string parent\_type
+    \item int parent\_id
+    \item int user\_id (FK)
+    \item text text
+    \item datetime created\_at
+  \end{itemize}
+
+  \item \textbf{Reactions}
+  \begin{itemize}
+    \item int id (PK)
+    \item string parent\_type
+    \item int parent\_id
+    \item int user\_id (FK)
+    \item string kind
+    \item datetime created\_at
+  \end{itemize}
+
+  \item \textbf{Sponsors}
+  \begin{itemize}
+    \item int id (PK)
+    \item string org\_name
+    \item string contact\_email
+    \item string website\_url
+    \item string logo\_url
+  \end{itemize}
+
+  \item \textbf{Sponsorships}
+  \begin{itemize}
+    \item int id (PK)
+    \item int sponsor\_id (FK)
+    \item int season\_id (FK)
+    \item string tier
+    \item date start\_date
+    \item date end\_date
+  \end{itemize}
+
+  \item \textbf{SponsorInquiries}
+  \begin{itemize}
+    \item int id (PK)
+    \item string name
+    \item string email
+    \item text message
+    \item string status
+  \end{itemize}
+
+  \item \textbf{Announcements}
+  \begin{itemize}
+    \item int id (PK)
+    \item string scope
+    \item int scope\_id
+    \item string title
+    \item text message
+    \item int created\_by (FK)
+    \item datetime created\_at
+  \end{itemize}
+
+  \item \textbf{Subscriptions}
+  \begin{itemize}
+    \item int id (PK)
+    \item int user\_id (FK)
+    \item string type
+  \end{itemize}
+
+\end{itemize}
+
+
+\subsection{UI Mocks}
+The UI mocks are in our github repository. They feature central pages, and a login page, there is also an admin dashboard planned not shown within the UI mocks.
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{Score Diagram.png}
+    \caption{Score Diagram}
+    \label{fig:placeholder}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{Sponsors.png}
+    \caption{Sponsrs}
+    \label{fig:placeholder}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{Team Profiles.png}
+    \caption{Team Profiles}
+    \label{fig:placeholder}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{Main.png}
+    \caption{Main Page}
+    \label{fig:placeholder}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{Login.png}
+    \caption{Login Page}
+    \label{fig:placeholder}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{Livestreams.png}
+    \caption{Livestreams}
+    \label{fig:placeholder}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{Game Schedules.png}
+    \caption{Game Schedules}
+    \label{fig:placeholder}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{Gallery.png}
+    \caption{Gallery}
+    \label{fig:placeholder}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{Bracket.png}
+    \caption{Bracket}
+    \label{fig:placeholder}
+\end{figure}
+
+\section{Iterations}
+
+\subsection{Iteration Planning}
+[In CS496, you plan all iterations beforehand. In CS482, you update the planning here at each iteration. ]
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{c l p{7cm} c}
+\hline
+\textbf{Iteration} & \textbf{Dates} & \textbf{Stories} & \textbf{Points} \\
+\hline
+1 & 10/09 - 10/23 & S1 Signing Up Children, S21 Registration, S9 Team Photos and Logos, S14 Contact Page, S11 Live Chat, S13 Buying Tickets & 15 \\ \hline
+2 & 10/23 - 11/06 & S22 Admin CRUD, S0 Scheduling, S11 Live Chat, S13 Buying Tickets, S19 Sponsor Info & 25 \\ \hline
+3 & 11/06 - 11/20 & S3 Match Bracket, S4 History of Matches, S5 Match Updates, S11 Live Chat, S12 Archives & 17 \\ \hline
+\multicolumn{3}{r}{\bf Total: } & 57 \\ \hline
+\end{tabular}
+\caption{Iteration Planning for Incremental Deliveries}
+\end{table}
+
+\subsection{Iteration/Sprint 1}
+\subsubsection{Planning}
+Joel: S1 Signing Up Children (2), S21 Registration (2)
+Nishant: S9 Team Photos and Logos (2), S14 Contact Page (2)
+Ekto: S11 Live Chat (5)
+Yohann:S13 Buying Tickets (2) and Paired Programming S11
+Total Points: 15
+The reasoning we started with these is because it was crucial to start with things like signups, children integrations, team formation and pages, contact pages. Live Chat seemed to be something that would take additional effort so it would make sense to get out the way first and pair program for it.
+
+\subsubsection{Work Done}
+Finished Work:
+Joel: S1 Signing Up Children (2), S21 Registration (2) Fully finished with page creation and connection from frontend to backend.
+Nishant: S9 Team Photos and Logos (2), S14 Contact Page (2) Fully finished with page creation and connection from frontend to backend.
+
+
+\subsubsection{Testing Coverage}
+[Testing is very important. Show your coverage here. Is this coverage good enough? Explain why you think so. Is it not good enough? Explain a plan to increase the coverage. You may also elaborate on why some artifacts do not undergo much testing. If the testing changed from the last iteration, explain the reasons.]
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\linewidth]{CoverageIteration1.png}
+    \caption{Iteration 1}
+    \label{fig:placeholder}
+\end{figure}
+It is good enough because it is 75 percent of the code coverage overall.
+\subsubsection{Retrospective \& Reflection}
+The challenges and issues had with this iteration is people not realizing the depth of the stories they chose, and how much work would be going into it, aswell as teamwork not really being at the forefront, and now we will try to work towards that. S11 AND S13 were not finished or any files even committed, with no real reason explained as to why.
+
+
+\subsection{Iteration/Sprint 2}
+\subsubsection{Planning}
+Joel will be doing S22 Admin CRUD worth 8 points.
+Nishant will be doing S0 Scheduling worth 8 pts
+Ekto will continue working on S11 Live Chat worth 5 pts.
+Yohann will be continue working S13 Buying Tickets and additionally work on S19 Sponsor Info worth 2 pts each.
+
+\subsubsection{Work Done}
+S22 Admin CRUD finished (but more could be edited later), S13 finished with examples included, although there is no true payment functionality because Professor Rocha advised against it due to the complexity in the long run. S0 had no work done towards it and S11 still doesnt seem to have any progress.
+
+\subsubsection{Testing Coverage}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\linewidth]{Iteration2Coverage.png}
+    \caption{Iteration 2}
+    \label{fig:placeholder}
+\end{figure}
+I believe this is good enough coverage because it tests every important file above 60 percent and more, there may be an additional increase in coverage as these get more fleshed out. The testing didnt change, but was added to with these new controllers and models.
+\subsubsection{Retroespective \& Reflection}
+The pitfalls this iteration had to do with mostly stagnancy on the project from some members, and we will be continuing forward trying to make sure that everyone contributes the same amount of work towards their user stories chosen. Not everything went to plan, with there being little development done with scheduling and the live chat. There was learning in additional website and database connections for team and child links, and fields/attributes being added as we get more complex with these fields.
+
+\subsection{Iteration/Sprint 3}
+\subsubsection{Planning}
+Joel Robinson: S3 Match Bracket (2) S4 History of Matches (3)
+Nishant Gurung: S5 Match Updates (5)
+Yohann: S12 Archive Folder (2)
+Ekto: S11 Live Chat (5)
+We aimed to implement a majority of the important match features this iteration, and the deliverable should be able to show them all.
+
+\subsubsection{Work Done}
+S3 Match Bracket and S4 History of Matches were completed by Joel. S5 Match Updates were completed by Nishant, S11 is partially (and almost fully) finished by Ekto. Yohann completed Archive Folders.
+
+\subsubsection{Testing Coverage}
+ This coverage is okay, there wasnt much time to put out very good test suites for our new controllers and javascript files, but something needed to be done.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\linewidth]{image_2025-11-23_201545847.png}
+    \caption{Iteration 3}
+    \label{fig:placeholder}
+\end{figure}
+\subsubsection{Retroespective \& Reflection}
+The pitfalls of this iteration were a lack of communication across the team, and something needs to be done going forward for everyone to know what they are doing before the iteration planning needs to be submitted. Everything completed within the iteration went well and alot was learned about updating items and showing them within the page. No one was able to finish the diagram in time either, so it must be added at a later date.
+
+\section{Final Remarks}
+
+\subsection{Overall Progress}
+[Have you completed everything? If so, present evidence on how you brought value to your client, and the overall client satisfaction. Otherwise, estimate how much progress you done and how long it would take to finish this project.]
+Overall, We completed roughly 70 percent of the work we set out to finish. The time it would take to finish this project would most likely span over another 2 iterations, as there were strides to be made within the coach viewing teams and assigning positions, aswell as bracket updating and sponsor pages.
+
+
+\subsection{Project Reflection}
+[Your personal reflection on the project. What lessons did you learned. What would you have done differently. How can you do better work in future projects? You may write this as a team or per person (or both)]
+Joel: The lessons I learned from this project are very linked with the planning that would come with each iteration and the beginning of the project. We oversimplified how much backend creation would need to happen for iteration 1 to come to fruition, which made it a mess when we were approaching the deadline, I would have personally taken more time and piecemealed it, aswell as maybe integrating similar tasks together for more coherency. Overall I think we attempted this project very well and have a semi-favorable end product for the time we had worked on this and the amount of programming it consists of total.
+
+Nishant: Building a functioning website was a fun and a creative way to implement all that we've learned so far. It was a good learning experience that taught me the importance of communicating effectively within a team and with the customers. Furthermore, by progressively developing each iteration as per the feedback we received, helped me focus on what was lacking in our project. When we started our CS 482 Project, we identified the admin functionalities, streaming functions, and a secured payment system as the most complex tasks. But by communicating about problems for each iterations, dividing work load, and collaboratively effort, we now have a well functioning website and backend to support it. Reflecting on the final outlook of our website, I think we've all practiced important concepts that'll help us for the next semester.
+\section*{Appendix}
+[Appendix section if needed]
+
+
+\end{document}
+
